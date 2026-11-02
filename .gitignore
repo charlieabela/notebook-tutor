@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.DS_Store
+# datasets downloaded or imported by ai-learning-kit when the tutor runs from this clone
+/data/
+# the notebooks students add, with their work, when the tutor runs from this clone
+/notebooks/
+# uv writes this when you run the tutor from a clone; it belongs to your computer, not the repository
+uv.lock

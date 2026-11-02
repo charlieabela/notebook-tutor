@@ -1,0 +1,30 @@
+Notebook Tutor
+Copyright (C) 2026 Charlie Abela, University of Malta
+
+This product was developed by Charlie Abela at the University of Malta for
+teaching data science and artificial intelligence.
+
+Notebook Tutor is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License as published by the
+Free Software Foundation, version 3 of the License (AGPL-3.0-only). It is
+distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Affero General Public License in LICENSE for
+more details.
+
+If you convey Notebook Tutor or a work based on it, keep this notice and the
+copyright notices with it. If you modify it and let users interact with it over
+a computer network, section 13 of the licence requires you to offer those
+users the complete source code of your version.
+
+If you use or adapt Notebook Tutor in your teaching or research, please also
+acknowledge the original work, for example:
+
+    Abela, C. (2026). Notebook Tutor: a teaching assistant for Jupyter
+    notebooks. University of Malta. https://github.com/charlieabela/notebook-tutor
+
+CITATION.cff gives the same reference in a machine-readable form.
+
+Third-party components distributed with Notebook Tutor, and their licences,
+are listed in THIRD_PARTY_NOTICES.md. Releases up to v0.1.18 were published
+under the Apache License, Version 2.0.

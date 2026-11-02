@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use or adapt Notebook Tutor, please acknowledge it as below."
+title: "Notebook Tutor: a teaching assistant for Jupyter notebooks"
+type: software
+authors:
+  - family-names: Abela
+    given-names: Charlie
+    affiliation: University of Malta
+    email: charlie.abela@um.edu.mt
+version: 0.1.19
+date-released: 2026-11-02
+license: AGPL-3.0-only
+repository-code: "https://github.com/charlieabela/notebook-tutor"
+keywords:
+  - education
+  - jupyter
+  - data science
+  - intelligent tutoring
+  - large language models

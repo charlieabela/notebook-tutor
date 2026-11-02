@@ -1,0 +1,2635 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Notebook Tutor</title><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Notebook Tutor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* BASICS */
+
+.CodeMirror {
+  /* Set height, width, borders, and global font properties here */
+  font-family: monospace;
+  height: 300px;
+  color: black;
+  direction: ltr;
+}
+
+/* PADDING */
+
+.CodeMirror-lines {
+  padding: 4px 0; /* Vertical padding around content */
+}
+.CodeMirror pre.CodeMirror-line,
+.CodeMirror pre.CodeMirror-line-like {
+  padding: 0 4px; /* Horizontal padding of content */
+}
+
+.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
+  background-color: white; /* The little square between H and V scrollbars */
+}
+
+/* GUTTER */
+
+.CodeMirror-gutters {
+  border-right: 1px solid #ddd;
+  background-color: #f7f7f7;
+  white-space: nowrap;
+}
+.CodeMirror-linenumbers {}
+.CodeMirror-linenumber {
+  padding: 0 3px 0 5px;
+  min-width: 20px;
+  text-align: right;
+  color: #999;
+  white-space: nowrap;
+}
+
+.CodeMirror-guttermarker { color: black; }
+.CodeMirror-guttermarker-subtle { color: #999; }
+
+/* CURSOR */
+
+.CodeMirror-cursor {
+  border-left: 1px solid black;
+  border-right: none;
+  width: 0;
+}
+/* Shown when moving in bi-directional text */
+.CodeMirror div.CodeMirror-secondarycursor {
+  border-left: 1px solid silver;
+}
+.cm-fat-cursor .CodeMirror-cursor {
+  width: auto;
+  border: 0 !important;
+  background: #7e7;
+}
+.cm-fat-cursor div.CodeMirror-cursors {
+  z-index: 1;
+}
+.cm-fat-cursor .CodeMirror-line::selection,
+.cm-fat-cursor .CodeMirror-line > span::selection, 
+.cm-fat-cursor .CodeMirror-line > span > span::selection { background: transparent; }
+.cm-fat-cursor .CodeMirror-line::-moz-selection,
+.cm-fat-cursor .CodeMirror-line > span::-moz-selection,
+.cm-fat-cursor .CodeMirror-line > span > span::-moz-selection { background: transparent; }
+.cm-fat-cursor { caret-color: transparent; }
+@-moz-keyframes blink {
+  0% {}
+  50% { background-color: transparent; }
+  100% {}
+}
+@-webkit-keyframes blink {
+  0% {}
+  50% { background-color: transparent; }
+  100% {}
+}
+@keyframes blink {
+  0% {}
+  50% { background-color: transparent; }
+  100% {}
+}
+
+/* Can style cursor different in overwrite (non-insert) mode */
+.CodeMirror-overwrite .CodeMirror-cursor {}
+
+.cm-tab { display: inline-block; text-decoration: inherit; }
+
+.CodeMirror-rulers {
+  position: absolute;
+  left: 0; right: 0; top: -50px; bottom: 0;
+  overflow: hidden;
+}
+.CodeMirror-ruler {
+  border-left: 1px solid #ccc;
+  top: 0; bottom: 0;
+  position: absolute;
+}
+
+/* DEFAULT THEME */
+
+.cm-s-default .cm-header {color: blue;}
+.cm-s-default .cm-quote {color: #090;}
+.cm-negative {color: #d44;}
+.cm-positive {color: #292;}
+.cm-header, .cm-strong {font-weight: bold;}
+.cm-em {font-style: italic;}
+.cm-link {text-decoration: underline;}
+.cm-strikethrough {text-decoration: line-through;}
+
+.cm-s-default .cm-keyword {color: #708;}
+.cm-s-default .cm-atom {color: #219;}
+.cm-s-default .cm-number {color: #164;}
+.cm-s-default .cm-def {color: #00f;}
+.cm-s-default .cm-variable,
+.cm-s-default .cm-punctuation,
+.cm-s-default .cm-property,
+.cm-s-default .cm-operator {}
+.cm-s-default .cm-variable-2 {color: #05a;}
+.cm-s-default .cm-variable-3, .cm-s-default .cm-type {color: #085;}
+.cm-s-default .cm-comment {color: #a50;}
+.cm-s-default .cm-string {color: #a11;}
+.cm-s-default .cm-string-2 {color: #f50;}
+.cm-s-default .cm-meta {color: #555;}
+.cm-s-default .cm-qualifier {color: #555;}
+.cm-s-default .cm-builtin {color: #30a;}
+.cm-s-default .cm-bracket {color: #997;}
+.cm-s-default .cm-tag {color: #170;}
+.cm-s-default .cm-attribute {color: #00c;}
+.cm-s-default .cm-hr {color: #999;}
+.cm-s-default .cm-link {color: #00c;}
+
+.cm-s-default .cm-error {color: #f00;}
+.cm-invalidchar {color: #f00;}
+
+.CodeMirror-composing { border-bottom: 2px solid; }
+
+/* Default styles for common addons */
+
+div.CodeMirror span.CodeMirror-matchingbracket {color: #0b0;}
+div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #a22;}
+.CodeMirror-matchingtag { background: rgba(255, 150, 0, .3); }
+.CodeMirror-activeline-background {background: #e8f2ff;}
+
+/* STOP */
+
+/* The rest of this file contains styles related to the mechanics of
+   the editor. You probably shouldn't touch them. */
+
+.CodeMirror {
+  position: relative;
+  overflow: hidden;
+  background: white;
+}
+
+.CodeMirror-scroll {
+  overflow: scroll !important; /* Things will break if this is overridden */
+  /* 50px is the magic margin used to hide the element's real scrollbars */
+  /* See overflow: hidden in .CodeMirror */
+  margin-bottom: -50px; margin-right: -50px;
+  padding-bottom: 50px;
+  height: 100%;
+  outline: none; /* Prevent dragging from highlighting the element */
+  position: relative;
+  z-index: 0;
+}
+.CodeMirror-sizer {
+  position: relative;
+  border-right: 50px solid transparent;
+}
+
+/* The fake, visible scrollbars. Used to force redraw during scrolling
+   before actual scrolling happens, thus preventing shaking and
+   flickering artifacts. */
+.CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
+  position: absolute;
+  z-index: 6;
+  display: none;
+  outline: none;
+}
+.CodeMirror-vscrollbar {
+  right: 0; top: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+.CodeMirror-hscrollbar {
+  bottom: 0; left: 0;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+.CodeMirror-scrollbar-filler {
+  right: 0; bottom: 0;
+}
+.CodeMirror-gutter-filler {
+  left: 0; bottom: 0;
+}
+
+.CodeMirror-gutters {
+  position: absolute; left: 0; top: 0;
+  min-height: 100%;
+  z-index: 3;
+}
+.CodeMirror-gutter {
+  white-space: normal;
+  height: 100%;
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: -50px;
+}
+.CodeMirror-gutter-wrapper {
+  position: absolute;
+  z-index: 4;
+  background: none !important;
+  border: none !important;
+}
+.CodeMirror-gutter-background {
+  position: absolute;
+  top: 0; bottom: 0;
+  z-index: 4;
+}
+.CodeMirror-gutter-elt {
+  position: absolute;
+  cursor: default;
+  z-index: 4;
+}
+.CodeMirror-gutter-wrapper ::selection { background-color: transparent }
+.CodeMirror-gutter-wrapper ::-moz-selection { background-color: transparent }
+
+.CodeMirror-lines {
+  cursor: text;
+  min-height: 1px; /* prevents collapsing before first draw */
+}
+.CodeMirror pre.CodeMirror-line,
+.CodeMirror pre.CodeMirror-line-like {
+  /* Reset some styles that the rest of the page might have set */
+  -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0;
+  border-width: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0;
+  white-space: pre;
+  word-wrap: normal;
+  line-height: inherit;
+  color: inherit;
+  z-index: 2;
+  position: relative;
+  overflow: visible;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-variant-ligatures: contextual;
+  font-variant-ligatures: contextual;
+}
+.CodeMirror-wrap pre.CodeMirror-line,
+.CodeMirror-wrap pre.CodeMirror-line-like {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: normal;
+}
+
+.CodeMirror-linebackground {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  z-index: 0;
+}
+
+.CodeMirror-linewidget {
+  position: relative;
+  z-index: 2;
+  padding: 0.1px; /* Force widget margins to stay inside of the container */
+}
+
+.CodeMirror-widget {}
+
+.CodeMirror-rtl pre { direction: rtl; }
+
+.CodeMirror-code {
+  outline: none;
+}
+
+/* Force content-box sizing for the elements where we expect it */
+.CodeMirror-scroll,
+.CodeMirror-sizer,
+.CodeMirror-gutter,
+.CodeMirror-gutters,
+.CodeMirror-linenumber {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+
+.CodeMirror-measure {
+  position: absolute;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.CodeMirror-cursor {
+  position: absolute;
+  pointer-events: none;
+}
+.CodeMirror-measure pre { position: static; }
+
+div.CodeMirror-cursors {
+  visibility: hidden;
+  position: relative;
+  z-index: 3;
+}
+div.CodeMirror-dragcursors {
+  visibility: visible;
+}
+
+.CodeMirror-focused div.CodeMirror-cursors {
+  visibility: visible;
+}
+
+.CodeMirror-selected { background: #d9d9d9; }
+.CodeMirror-focused .CodeMirror-selected { background: #d7d4f0; }
+.CodeMirror-crosshair { cursor: crosshair; }
+.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: #d7d4f0; }
+.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection { background: #d7d4f0; }
+
+.cm-searching {
+  background-color: #ffa;
+  background-color: rgba(255, 255, 0, .4);
+}
+
+/* Used to force a border model for a node */
+.cm-force-border { padding-right: .1px; }
+
+@media print {
+  /* Hide the cursor when printing */
+  .CodeMirror div.CodeMirror-cursors {
+    visibility: hidden;
+  }
+}
+
+/* See issue #2901 */
+.cm-tab-wrap-hack:after { content: ''; }
+
+/* Help users use markselection to safely style text background */
+span.CodeMirror-selectedtext { background: none; }
+
+/* Layout: a working notebook on squared lab paper. Each cell carries its own run button (left) and its own tutor notes (underneath); a side panel takes free questions and folds into a drawer on narrower screens. */
+:root {
+  --bg: #eef1f5;
+  --paper: #ffffff;
+  --ink: #15202c;
+  --ink-2: #4b5768;
+  --ink-3: #7a8596;
+  --line: #d6dce5;
+  --grid: rgba(45, 85, 200, 0.055);
+  --accent: #2c54c6;
+  --accent-ink: #ffffff;
+  --accent-soft: #e5ebfa;
+  --tutor: #9a5300;
+  --tutor-soft: #fbf0e0;
+  --code-bg: #f6f8fb;
+  --ok: #1d7a4c; --ok-soft: #e1f2e8;
+  --warn: #9a6400; --warn-soft: #fff1d6;
+  --bad: #b2261d; --bad-soft: #fbe6e4;
+  --shadow: 0 1px 2px rgba(20, 32, 48, 0.06), 0 6px 18px rgba(20, 32, 48, 0.06);
+  --cm-kw: #7a2bb5; --cm-str: #19774a; --cm-num: #b04a00; --cm-com: #7a8596; --cm-def: #2c54c6; --cm-builtin: #0f6d8c; --cm-prop: #3b4a63;
+  --font-display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131a; --paper: #151c26; --ink: #e5e9ef; --ink-2: #a3adbc; --ink-3: #737f91; --line: #263142;
+    --grid: rgba(126, 160, 255, 0.05); --accent: #86a6ff; --accent-ink: #0e1630; --accent-soft: #1b2643;
+    --tutor: #f0a650; --tutor-soft: #2a2015; --code-bg: #111821;
+    --ok: #62c793; --ok-soft: #13291e; --warn: #e8b350; --warn-soft: #2b2312; --bad: #f3877e; --bad-soft: #2f1816;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
+    --cm-kw: #c79bff; --cm-str: #7fd3a3; --cm-num: #f3a36b; --cm-com: #737f91; --cm-def: #86a6ff; --cm-builtin: #6fc6e2; --cm-prop: #c3cbd8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131a; --paper: #151c26; --ink: #e5e9ef; --ink-2: #a3adbc; --ink-3: #737f91; --line: #263142;
+  --grid: rgba(126, 160, 255, 0.05); --accent: #86a6ff; --accent-ink: #0e1630; --accent-soft: #1b2643;
+  --tutor: #f0a650; --tutor-soft: #2a2015; --code-bg: #111821;
+  --ok: #62c793; --ok-soft: #13291e; --warn: #e8b350; --warn-soft: #2b2312; --bad: #f3877e; --bad-soft: #2f1816;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
+  --cm-kw: #c79bff; --cm-str: #7fd3a3; --cm-num: #f3a36b; --cm-com: #737f91; --cm-def: #86a6ff; --cm-builtin: #6fc6e2; --cm-prop: #c3cbd8;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0;  background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font-body); -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, pre, kbd { font-family: var(--font-mono); font-size: 0.86em; }
+
+.app { height: 100%; display: grid; grid-template-rows: auto auto 1fr; min-height: 0; }
+
+/* top bar */
+.top { background: var(--paper); border-bottom: 1px solid var(--line); padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; min-width: 0; }
+.brand h1 { font: 700 1.28rem/1.1 var(--font-display); letter-spacing: -0.01em; margin: 0; white-space: nowrap; }
+.brand h1 span { color: var(--accent); }
+.brand small { color: var(--ink-3); font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.seg { display: inline-flex; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; padding: 6px 14px; border-radius: 999px; cursor: pointer; font-weight: 500; font-size: 0.9rem; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--paper); color: var(--ink); box-shadow: var(--shadow); }
+.ctl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+select, .btn { border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 6px 10px; font-size: 0.88rem; cursor: pointer; }
+.btn { display: inline-flex; align-items: center; gap: 6px; line-height: 1.2; white-space: nowrap; }
+.btn:hover { border-color: var(--ink-3); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.tutorbtn { color: var(--tutor); border-color: color-mix(in srgb, var(--tutor) 35%, var(--line)); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--ink-2); padding-inline: 8px; }
+.btn.ghost:hover { background: var(--bg); color: var(--ink); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn svg { width: 14px; height: 14px; flex: none; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; padding: 3px 9px; border-radius: 999px; background: var(--bg); color: var(--ink-2); border: 1px solid var(--line); white-space: nowrap; }
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); }
+.chip.ok .dot { background: var(--ok); } .chip.busy .dot { background: var(--warn); animation: pulse 1s infinite; } .chip.bad .dot { background: var(--bad); }
+@keyframes pulse { 50% { opacity: .3; } }
+
+/* notebook toolbar */
+.bar { background: var(--paper); border-bottom: 1px solid var(--line); padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.nbtitle { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46ch; }
+.bar .spacer { flex: 1; }
+.progress { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.progress .track { width: 110px; height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; border: 1px solid var(--line); }
+.progress .fill { height: 100%; width: 0; background: var(--ok); transition: width .3s; }
+
+.main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(340px, 420px); min-height: 0; }
+
+/* notebook column */
+.nbcol { overflow: auto; min-width: 0; padding-block: 22px 120px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px; }
+.cells { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.notice { max-width: 900px; margin: 0 auto 14px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 14px; font-size: 0.9rem; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.notice b { font-weight: 600; }
+
+.cell { position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 0 10px; }
+.cell > :not(.gutter) { grid-column: 2; min-width: 0; }
+.cell .gutter { grid-row: 1 / span 3; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 4px; font: 500 0.74rem/1 var(--font-mono); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.cell .gutter .run { width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; cursor: pointer; box-shadow: 0 1px 3px rgba(20, 32, 48, 0.25); }
+.cell .gutter .run:hover { filter: brightness(1.08); transform: scale(1.04); }
+.cell .gutter .run svg { width: 15px; height: 15px; margin-left: 2px; }
+.cell.running .gutter .run { animation: pulse 1s infinite; }
+.md { grid-column: 2; padding: 4px 4px 2px; }
+.md h1, .md h2, .md h3 { font-family: var(--font-display); line-height: 1.2; letter-spacing: -0.01em; text-wrap: balance; }
+.md h1 { font-size: 1.75rem; margin: 6px 0 10px; }
+.md h2 { font-size: 1.3rem; margin: 14px 0 6px; }
+.md h3 { font-size: 1.08rem; margin: 12px 0 4px; }
+.md p, .md li { max-width: 72ch; }
+.md p { margin: 0 0 10px; }
+.md code { background: var(--code-bg); border: 1px solid var(--line); border-radius: 5px; padding: 0 4px; }
+.md mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
+.md img { max-width: 100%; }
+.md table { border-collapse: collapse; } .md td, .md th { border: 1px solid var(--line); padding: 4px 8px; }
+.codebox { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); min-width: 0; overflow: hidden; }
+.cell.active .codebox { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow); }
+.cell.exercise .codebox { border-left: 4px solid var(--tutor); }
+.cellhead { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 6px 8px 6px 12px; border-bottom: 1px solid var(--line); background: var(--paper); font-size: 0.8rem; color: var(--ink-2); min-height: 42px; }
+.cellhead .tags { display: flex; gap: 4px 12px; flex-wrap: wrap; margin-right: auto; align-items: center; min-width: 0; }
+.exlabel { font-weight: 700; color: var(--tutor); font-size: 0.86rem; }
+.state { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.state::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.state.done { color: var(--ok); } .state.partial { color: var(--warn); } .state.err { color: var(--bad); }
+.note { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-3); font-style: italic; cursor: help; }
+.note svg { width: 14px; height: 14px; flex: none; }
+.act { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 8px; padding: 5px 11px; font-size: 0.82rem; font-weight: 500; line-height: 1.2; cursor: pointer; white-space: nowrap; box-shadow: 0 1px 0 var(--line); }
+.act svg { width: 15px; height: 15px; flex: none; }
+.act:hover { border-color: var(--ink-3); background: var(--bg); }
+.act:active { transform: translateY(1px); box-shadow: none; }
+.act.coach { color: var(--tutor); border-color: color-mix(in srgb, var(--tutor) 45%, var(--line)); }
+.act.coach:hover { background: var(--tutor-soft); border-color: var(--tutor); }
+.act.plain { color: var(--ink-2); }
+.tag { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; background: var(--bg); color: var(--ink-2); }
+.tag.ex { background: var(--tutor-soft); color: var(--tutor); }
+.tag.done { background: var(--ok-soft); color: var(--ok); } .tag.partial { background: var(--warn-soft); color: var(--warn); } .tag.err { background: var(--bad-soft); color: var(--bad); }
+.tag.edit { background: var(--accent-soft); color: var(--accent); }
+.cellhead .btn { padding: 4px 8px; font-size: 0.8rem; }
+.editor .CodeMirror { height: auto; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.55; background: var(--code-bg); color: var(--ink); padding: 6px 0; }
+.editor .CodeMirror-scroll { height: auto; overflow-y: hidden !important; overflow-x: auto !important; margin-bottom: 0; padding-bottom: 0; }
+.editor .CodeMirror-hscrollbar, .editor .CodeMirror-vscrollbar, .editor .CodeMirror-scrollbar-filler { display: none !important; }
+.cells > * { flex: none; }
+.editor .CodeMirror-cursor { border-left-color: var(--ink); }
+.editor .CodeMirror-selected, .editor .CodeMirror-focused .CodeMirror-selected { background: var(--accent-soft) !important; }
+.editor .CodeMirror-gutters { background: var(--code-bg); border-right: 1px solid var(--line); }
+.editor .CodeMirror-linenumber { color: var(--ink-3); font-size: 11px; }
+.editor .CodeMirror-matchingbracket { color: var(--ok) !important; font-weight: 600; }
+.cm-s-default .cm-keyword { color: var(--cm-kw); } .cm-s-default .cm-string { color: var(--cm-str); } .cm-s-default .cm-number { color: var(--cm-num); }
+.cm-s-default .cm-comment { color: var(--cm-com); font-style: italic; } .cm-s-default .cm-def { color: var(--cm-def); } .cm-s-default .cm-builtin { color: var(--cm-builtin); }
+.cm-s-default .cm-property, .cm-s-default .cm-variable-2 { color: var(--cm-prop); } .cm-s-default .cm-variable, .cm-s-default .cm-operator, .cm-s-default .cm-punctuation { color: var(--ink); }
+.cm-s-default .cm-meta { color: var(--cm-builtin); }
+.cm-blank { background: var(--tutor-soft); outline: 1px dashed var(--tutor); border-radius: 3px; }
+.errline { background: var(--bad-soft); }
+
+/* adding cells: a bar between cells that shows on hover or focus, and one after the last cell that always shows */
+/* adding cells: + Code and + Text before the first cell, between every two cells and after the last one;
+   always there, quieter until the pointer comes near */
+.adder { display: flex; justify-content: center; align-items: center; gap: 8px; height: 24px; margin: -8px 0 -8px 66px; position: relative; z-index: 2; opacity: 0.55; transition: opacity .12s; }
+.adder::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed var(--line); z-index: -1; }
+.adder:hover, .adder:focus-within, .cell:hover + .adder { opacity: 1; }
+.adder .act { padding: 2px 10px; font-size: 0.78rem; background: var(--paper); }
+.adder.end { opacity: 1; margin: 0 0 0 66px; }
+.adder.end::before { display: none; }
+.mdedit { grid-column: 2; border: 1px solid var(--accent); border-radius: var(--r); overflow: hidden; background: var(--paper); }
+.mdedit .CodeMirror { font-family: var(--font-body, inherit); font-size: 0.95rem; }
+.mdedit .row { display: flex; gap: 8px; padding: 6px 8px; border-top: 1px solid var(--line); background: var(--paper); }
+.mdcell.added .md:empty::before { content: "Empty text cell"; color: var(--ink-3); font-style: italic; }
+.thead .clearnotes { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; padding: 5px 10px; }
+.thead .clearnotes svg { width: 14px; height: 14px; }
+.notes { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.notes:empty { display: none; }
+.mdacts { display: flex; gap: 8px; margin-top: 2px; }
+.mdcell .notes { margin-top: 8px; }
+.card .tog { margin-left: auto; border: 0; background: none; color: var(--ink-2); width: 26px; height: 22px; border-radius: 6px; display: grid; place-items: center; cursor: pointer; }
+.card .stop:not([hidden]) + .tog { margin-left: 0; }
+.card .tog:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.card .tog svg { width: 14px; height: 14px; transition: transform .15s; }
+.card.collapsed .cb { display: none; }
+.card.collapsed .tog svg { transform: rotate(-90deg); }
+.inask { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+.inask textarea { flex: 1 1 220px; min-width: 0; resize: none; border: 1px solid var(--accent); border-radius: 10px; padding: 8px 10px; background: var(--paper); min-height: 40px; max-height: 140px; }
+.card.k-try .ch { background: var(--accent-soft); } .card.k-try .kind { color: var(--accent); }
+.steps { margin: 4px 0 10px; padding-left: 22px; display: flex; flex-direction: column; gap: 4px; }
+.steps li::marker { color: var(--accent); font-weight: 700; font-family: var(--font-mono); }
+.steps code, .then code { background: var(--code-bg); border-radius: 4px; padding: 0 3px; }
+.then { margin-bottom: 10px; }
+.trystatus { display: flex; gap: 8px; align-items: baseline; border-radius: 8px; padding: 8px 10px; font-size: 0.86rem; margin-bottom: 8px; }
+.trystatus::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: currentColor; transform: translateY(-1px); }
+.trystatus.wait { background: var(--bg); color: var(--ink-2); }
+.trystatus.warn { background: var(--warn-soft); color: var(--warn); }
+.trystatus.bad { background: var(--bad-soft); color: var(--bad); }
+.trystatus.ok { background: var(--ok-soft); color: var(--ok); }
+.trystatus b { font-weight: 600; }
+pre.diff { margin: 2px 0 8px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-size: 0.78rem; white-space: pre-wrap; word-break: break-word; }
+.modestrip { max-width: 900px; margin: 0 auto 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 14px; font-size: 0.9rem; }
+.modestrip .mname { font: 700 0.98rem/1.2 var(--font-display); color: var(--accent); }
+.app[data-mode="practice"] .modestrip .mname { color: var(--tutor); }
+.modestrip .mline { color: var(--ink-2); flex: 1 1 280px; min-width: 0; }
+.modestrip .macts { display: flex; gap: 6px; flex-wrap: wrap; }
+.grp { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 10px; margin-top: 2px; }
+.grp:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+#modes { max-width: min(860px, calc(100vw - 32px)); }
+#modes .rec { margin: 8px 0 14px; font-weight: 500; }
+.modecards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.modecard { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.modecard h4 { margin: 0; font: 700 1.15rem/1.2 var(--font-display); color: var(--accent); }
+#card-practice h4 { color: var(--tutor); }
+.modecard.rec { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+#card-practice.rec { border-color: var(--tutor); box-shadow: 0 0 0 3px var(--tutor-soft); }
+.modecard .lede { margin: 0 0 4px; font-weight: 500; }
+.modecard dl { margin: 0 0 8px; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 0.88rem; }
+.modecard dt { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); padding-top: 3px; }
+.modecard dd { margin: 0; color: var(--ink-2); }
+.modecard .btn { margin-top: auto; align-self: flex-start; }
+.welcome p { margin: 0 0 8px; } .welcome .muted { color: var(--ink-3); font-size: 0.84rem; }
+.outputs { border-top: 1px solid var(--line); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.outputs:empty { display: none; }
+.out-pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 0.82rem; line-height: 1.5; max-height: 420px; overflow: auto; }
+.out-pre.err { color: var(--warn); }
+.out-note { font-size: 0.8rem; color: var(--ink-3); }
+.out-html { overflow-x: auto; max-width: 100%; font-size: 0.84rem; }
+.out-html table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 0.78rem; }
+.out-html th, .out-html td { padding: 4px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.out-html thead th { border-bottom: 1px solid var(--ink-3); color: var(--ink); }
+.out-html tbody th { color: var(--ink-2); }
+.out-html tbody tr:nth-child(even) { background: var(--code-bg); }
+.out-img { max-width: 100%; height: auto; border-radius: 6px; background: #fff; align-self: flex-start; }
+.out-error { background: var(--bad-soft); border-radius: 8px; padding: 10px 12px; color: var(--ink); }
+.out-error .ename { color: var(--bad); font-weight: 600; font-family: var(--font-mono); font-size: 0.86rem; }
+.out-error pre { margin: 6px 0 0; white-space: pre-wrap; font-size: 0.78rem; color: var(--ink-2); max-height: 260px; overflow: auto; }
+.veil { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--tutor-soft); color: var(--tutor); border-radius: 8px; padding: 10px 12px; font-size: 0.88rem; }
+.veil b { font-weight: 600; }
+.loadmsg { font-size: 0.8rem; color: var(--ink-3); font-style: italic; }
+
+/* tutor column */
+.tutor { border-left: 1px solid var(--line); background: var(--paper); display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.thead { padding: 12px 16px 10px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+.thead h2 { margin: 0; font: 700 1.05rem/1.2 var(--font-display); color: var(--tutor); }
+.thead .score { margin-left: auto; font-size: 0.8rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.thead .close { display: inline-flex; }
+/* the tutor panel can be hidden on a wide screen too; the round "Ask the tutor" button brings it back */
+@media (min-width: 1181px) {
+  body.tutor-hidden .main { grid-template-columns: minmax(0, 1fr); }
+  body.tutor-hidden .tutor { display: none; }
+  body.tutor-hidden .fab { display: inline-flex; align-items: center; }
+}
+/* deleting a cell: a bin in the cell's gutter, shown when the pointer is over the cell */
+.cell .gutter .delcell { border: 0; background: none; color: var(--ink-3); width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity .12s; }
+.cell .gutter .delcell svg { width: 16px; height: 16px; }
+.cell:hover .gutter .delcell, .cell .gutter .delcell:focus-visible { opacity: 1; }
+.cell .gutter .delcell:hover { color: var(--bad); background: var(--bad-soft); }
+@media (hover: none) { .cell .gutter .delcell { opacity: 0.6; } }
+.btn.danger { background: var(--bad); border-color: var(--bad); color: #fff; }
+#delDlg ul { margin: 6px 0 10px; padding-left: 20px; }
+#delDlg li { margin: 4px 0; }
+.feed { flex: 1; overflow: auto; padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.welcome { color: var(--ink-2); font-size: 0.9rem; }
+.welcome h3 { font: 600 1rem/1.3 var(--font-display); color: var(--ink); margin: 0 0 6px; }
+.welcome ul { padding-left: 18px; margin: 6px 0; }
+.card { border: 1px solid var(--line); border-radius: var(--r); background: var(--paper); overflow: hidden; flex: none; }
+.card .ch { display: flex; align-items: center; gap: 8px; padding: 7px 12px; background: var(--tutor-soft); font-size: 0.78rem; }
+.card .kind { font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--tutor); }
+.card .about { color: var(--ink-2); cursor: pointer; background: none; border: 0; padding: 0; font-size: 0.78rem; text-decoration: underline dotted; }
+.card .ch .stop { margin-left: auto; }
+.card .cb { padding: 10px 12px 12px; font-size: 0.9rem; min-width: 0; }
+.card.k-check .ch, .card.k-predict .ch { background: var(--accent-soft); }
+.card.k-check .kind, .card.k-predict .kind { color: var(--accent); }
+.card.k-error .ch { background: var(--bad-soft); } .card.k-error .kind { color: var(--bad); }
+.prose > :first-child { margin-top: 0; } .prose > :last-child { margin-bottom: 0; }
+.prose p { margin: 0 0 8px; } .prose ul, .prose ol { margin: 0 0 8px; padding-left: 20px; } .prose li { margin: 2px 0; }
+.prose pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; overflow-x: auto; font-size: 0.8rem; }
+.prose code { background: var(--code-bg); border-radius: 4px; padding: 0 3px; }
+.prose pre code { background: none; padding: 0; }
+.prose mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.thinking { color: var(--ink-3); font-style: italic; display: flex; align-items: center; gap: 8px; }
+.thinking::before { content: ""; width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--tutor); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.q { font-weight: 500; margin: 0 0 10px; }
+.opts { display: flex; flex-direction: column; gap: 6px; }
+.opt { text-align: left; border: 1px solid var(--line); background: var(--paper); border-radius: 8px; padding: 8px 10px; cursor: pointer; display: grid; grid-template-columns: 22px 1fr; gap: 6px; align-items: start; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt .l { font: 600 0.8rem/1.6 var(--font-mono); color: var(--ink-3); }
+.opt.right { border-color: var(--ok); background: var(--ok-soft); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt:disabled { cursor: default; }
+.verdict { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 0.85rem; padding: 3px 9px; border-radius: 6px; margin: 10px 0 6px; }
+.verdict.correct { background: var(--ok-soft); color: var(--ok); } .verdict.partly, .verdict.partial { background: var(--warn-soft); color: var(--warn); }
+.verdict.incorrect, .verdict.error { background: var(--bad-soft); color: var(--bad); } .verdict.empty { background: var(--bg); color: var(--ink-2); }
+.ans { width: 100%; min-height: 70px; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--paper); resize: vertical; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+.rv h4 { margin: 10px 0 2px; font-size: 0.74rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); }
+.you { align-self: flex-end; max-width: 88%; background: var(--accent-soft); border-radius: 12px 12px 2px 12px; padding: 8px 12px; font-size: 0.9rem; white-space: pre-wrap; word-break: break-word; flex: none; }
+.banner { margin: 0 16px 10px; border-radius: 8px; padding: 8px 12px; background: var(--warn-soft); color: var(--ink); font-size: 0.84rem; }
+.composer { border-top: 1px solid var(--line); padding: 10px 16px; padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 6px; }
+.composer .ctx { font-size: 0.76rem; color: var(--ink-3); }
+.composer .inrow { display: flex; gap: 8px; align-items: flex-end; }
+.composer textarea { flex: 1; min-width: 0; resize: none; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--bg); max-height: 140px; min-height: 40px; }
+.fab { display: none; position: fixed; right: max(16px, calc(env(safe-area-inset-right, 0px) + 12px)); bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px)); z-index: 40; border: 0; background: var(--tutor); color: var(--paper); font-weight: 600; padding: 12px 18px; border-radius: 999px; box-shadow: var(--shadow); cursor: pointer; }
+.fab .unread { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--paper); margin-left: 6px; vertical-align: middle; }
+
+/* popovers & dialog */
+.pop { position: relative; }
+.panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 50; width: min(340px, calc(100vw - 32px)); background: var(--paper); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 14px; display: flex; flex-direction: column; gap: 12px; font-size: 0.88rem; }
+.panel label.sw { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.panel label.sw input { margin-top: 3px; accent-color: var(--accent); }
+.panel .fld { display: flex; flex-direction: column; gap: 4px; }
+.panel .fld span { font-size: 0.78rem; color: var(--ink-2); font-weight: 500; }
+.panel textarea { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; background: var(--bg); min-height: 64px; }
+.panel .hint { font-size: 0.78rem; color: var(--ink-3); }
+.panel ul.files { margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 0.8rem; }
+dialog { border: 1px solid var(--line); border-radius: 14px; background: var(--paper); color: var(--ink); max-width: min(720px, calc(100vw - 32px)); padding: 0; box-shadow: var(--shadow); }
+dialog::backdrop { background: rgba(10, 16, 24, 0.45); }
+dialog .dh { display: flex; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+dialog .dh h3 { margin: 0; font: 700 1.1rem/1.2 var(--font-display); margin-right: auto; }
+dialog .db { padding: 6px 18px 18px; max-height: 70vh; overflow: auto; font-size: 0.9rem; }
+dialog pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; font-size: 0.78rem; }
+.drop { outline: 3px dashed var(--accent); outline-offset: -10px; }
+
+@media (max-width: 1180px) {
+  html, body { height: auto; }
+  .app { height: auto; display: block; }
+  .nbcol { overflow: visible; }
+  .main { grid-template-columns: minmax(0, 1fr); }
+  .tutor { position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 92vw); z-index: 45; border-left: 1px solid var(--line); box-shadow: -10px 0 30px rgba(0,0,0,.16); transform: translateX(105%); transition: transform .25s ease; padding-top: env(safe-area-inset-top, 0px); }
+  .tutor.open { transform: none; }
+  .thead .close { display: inline-flex; }
+  .fab { display: inline-flex; align-items: center; }
+}
+@media (max-width: 980px) { .brand small { display: none; } }
+@media (max-width: 640px) {
+  .cell { grid-template-columns: 40px minmax(0, 1fr); gap: 0 6px; }
+  .cell .gutter .run { width: 34px; height: 34px; }
+  .cell .gutter { font-size: 0.68rem; }
+  .tutor { top: auto; left: 0; width: auto; height: min(80%, 680px); border-left: 0; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,.18); transform: translateY(105%); padding-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand"><h1>Notebook <span>Tutor</span></h1><small>Run the code · understand the ideas</small></div>
+    <div class="seg" role="group" aria-label="Mode">
+      <button id="m-guided" aria-pressed="true">Guided walkthrough</button>
+      <button id="m-practice" aria-pressed="false">Practice</button>
+    </div>
+    <div class="ctl">
+      <label for="level" class="sr" hidden>Cohort</label>
+      <select id="level" aria-label="Cohort">
+        <option value="ari1101">ARI1101 · Year 1</option>
+        <option value="ics2205">ICS2205 · Years 2–3</option>
+        <option value="ics5111">ICS5111 · Postgraduate</option>
+        <option value="custom">Other cohort…</option>
+      </select>
+      <div class="pop">
+        <button class="btn" id="settingsBtn" aria-expanded="false"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg>Tutor settings</button>
+        <div class="panel" id="settingsPanel" hidden>
+          <div class="grp" id="llmGrp" hidden>Language model</div>
+          <div class="fld" id="llmFld" hidden><span id="llmName">Not set up</span><button class="btn" type="button" id="llmBtn">Change…</button></div>
+          <div class="grp">Guided walkthrough</div>
+          <label class="sw"><input type="checkbox" id="s-explain" checked><span><b>Explain each cell after it runs</b><br><span class="hint">An explanation of the code, the idea and the output appears under the cell.</span></span></label>
+          <label class="sw"><input type="checkbox" id="s-predict" checked><span><b>Predict before you look</b><br><span class="hint">At cells the lecturer chose, the output stays hidden until you answer a prediction question.</span></span></label>
+          <div class="fld"><span>Checkpoint questions</span>
+            <select id="s-quiz"><option value="0">Only when I ask</option><option value="1">After every cell</option><option value="2">Every 2 cells</option><option value="3" selected>Every 3 cells</option></select></div>
+          <div class="grp">Practice</div>
+          <label class="sw"><input type="checkbox" id="s-review" checked><span><b>Check my code after each run</b><br><span class="hint">Feedback on your Python and on the data-science reasoning, under the exercise.</span></span></label>
+          <label class="sw"><input type="checkbox" id="s-quizp" checked><span><b>Ask me a question after exercises I get right</b><br><span class="hint">About every second correct exercise.</span></span></label>
+          <div class="grp">Both modes</div>
+          <div class="fld"><span>Tutor speed</span>
+            <select id="s-speed"><option value="quick" selected>Fast answers</option><option value="default">Thorough (slower)</option></select></div>
+          <div class="fld" id="noteFld" hidden><span>Describe the cohort for the tutor</span>
+            <textarea id="s-note" placeholder="e.g. Second-year students who know pandas but have not met regularisation yet."></textarea></div>
+          <div class="hint" id="privacyHint">Questions you answer and code you write stay in this browser.</div>
+        </div>
+      </div>
+      <span class="chip busy" id="pyChip"><span class="dot"></span><span id="pyText">Starting Python…</span></span>
+    </div>
+  </header>
+
+  <div class="bar">
+    <span class="nbtitle" id="nbTitle">Loading…</span>
+    <span class="chip" id="sampleChip" hidden>Sample notebook</span>
+    <div class="progress" id="progress"><span class="track"><span class="fill" id="progFill"></span></span><span id="progText"></span><span id="score"></span></div>
+    <span class="spacer"></span>
+    <button class="btn" id="openBtn" title="Open a .ipynb notebook"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4.5h4l1.5 1.5H14v6.5H2z"/></svg>Open notebook</button>
+    <input type="file" id="openFile" accept=".ipynb,.json,application/json" hidden>
+    <div class="pop">
+      <button class="btn" id="dataBtn" aria-expanded="false"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 2.5h7l3 3v8H3z"/><path d="M5.5 8h5M5.5 10.5h5"/></svg>Data files</button>
+      <div class="panel" id="dataPanel" hidden>
+        <div id="dataIntro">Python here cannot reach the internet. Add the CSV or text files your notebook reads, then use just the file name, e.g. <code>pd.read_csv("houses.csv")</code>.</div>
+        <ul class="files" id="fileList"></ul>
+        <button class="btn" id="addData">Add data file…</button>
+        <input type="file" id="dataFile" multiple hidden>
+      </div>
+    </div>
+    <button class="btn" id="runAbove" title="Run every code cell above the selected one, without explanations">Run all above</button>
+    <button class="btn primary" id="runNext"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5v11l9-5.5z"/></svg>Run next cell</button>
+    <button class="btn" id="interruptBtn" hidden title="Stop the cell that is running (like Interrupt in Jupyter)">Stop</button>
+    <button class="btn ghost" id="restart" title="Clear all variables and outputs">Restart Python</button>
+    <button class="btn ghost" id="dlBtn" hidden title="Save this notebook with your code and outputs">Save my work</button>
+    <span class="chip" id="saveHint" hidden title="Your code, outputs and progress are written into the .ipynb file">Save with Ctrl+S</span>
+    <button class="btn ghost" id="helpBtn">For lecturers</button>
+  </div>
+
+  <div class="main">
+    <main class="nbcol" id="nbcol">
+      <div class="modestrip" id="modeStrip"><span class="mname" id="modeName">Guided walkthrough</span><span class="mline" id="modeLine"></span><span class="macts"><button class="act plain" type="button" id="modeHelp">What's the difference?</button><button class="act plain" type="button" id="modeSwitch">Switch to Practice</button></span></div>
+      <div class="notice" id="notice" hidden></div>
+      <div class="cells" id="cells"></div>
+    </main>
+    <aside class="tutor" id="tutor" aria-label="Tutor">
+      <div class="thead"><h2>Ask the tutor</h2><button class="btn clearnotes" id="clearNotes" type="button" title="Remove every explanation, answer and question, and start again"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.8 8a5.2 5.2 0 1 0 1.6-3.8"/><path d="M2.6 2.2v2.8h2.8"/></svg>Clear notes</button><button class="btn ghost close" id="closeTutor" type="button" title="Hide this panel; the Ask the tutor button brings it back">Hide</button></div>
+      <div class="banner" id="tutorBanner" hidden></div>
+      <div class="feed" id="feed" aria-live="polite"></div>
+      <div class="composer">
+        <span class="ctx" id="askCtx">Ask about the notebook</span>
+        <div class="inrow"><textarea id="ask" rows="1" placeholder="Ask the tutor a question…"></textarea><button class="btn primary" id="sendAsk">Ask</button></div>
+      </div>
+    </aside>
+  </div>
+</div>
+<button class="fab" id="fab" type="button">Ask the tutor<span class="unread" id="unread" hidden></span></button>
+
+<dialog id="modes" aria-labelledby="modesTitle">
+  <div class="dh"><h3 id="modesTitle">How do you want to work on this notebook?</h3><button class="btn ghost" id="modesClose" type="button">Close</button></div>
+  <div class="db">
+    <p class="rec" id="modeRec"></p>
+    <div class="modecards">
+      <section class="modecard" id="card-guided">
+        <h4>Guided walkthrough</h4>
+        <p class="lede">Learn from a notebook your lecturer prepared.</p>
+        <dl>
+          <dt>You</dt><dd>Run the cells in order with the ▶ button beside each one. Change the code and run it again whenever you like.</dd>
+          <dt>The tutor</dt><dd>Explains every cell under it after it runs. Every few cells it asks a question: multiple choice, a short answer, or a change to try in the code and explain. Some outputs stay hidden until you predict them.</dd>
+          <dt>Use it</dt><dd>Before a session to prepare, or after it to revise.</dd>
+        </dl>
+        <button class="btn" id="pick-guided" type="button">Start guided walkthrough</button>
+      </section>
+      <section class="modecard" id="card-practice">
+        <h4>Practice</h4>
+        <p class="lede">Write the missing code yourself.</p>
+        <dl>
+          <dt>You</dt><dd>Complete the cells headed <b>Exercise</b>, then run them. The other cells set things up and run without comments.</dd>
+          <dt>The tutor</dt><dd>Checks your Python and your data-science reasoning after each run. Gives hints when you ask, from a nudge (1) to a worked solution (3). Suggests an experiment when you get one right.</dd>
+          <dt>Use it</dt><dd>After a session, to practise on your own.</dd>
+        </dl>
+        <button class="btn" id="pick-practice" type="button">Start practice</button>
+      </section>
+    </div>
+    <p class="out-note">In both modes you can ask the tutor anything, explain any cell or text, and see your progress at the top.</p>
+  </div>
+</dialog>
+
+<dialog id="clearDlg" aria-labelledby="clearTitle">
+  <div class="dh"><h3 id="clearTitle">Clear the tutor's notes?</h3></div>
+  <div class="db">
+    <p>This removes every explanation, answer and follow-up, every checkpoint and <b>Quiz me</b> question, and the conversation in <b>Ask the tutor</b>, so you can work through the notebook again from scratch. Your lecturer's questions and the output predictions are asked again when you run those cells.</p>
+    <p class="muted">Your code, your outputs, the cells you added and your exercise progress stay.</p>
+    <div class="row" style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" type="button" id="clearKeep">Keep them</button><button class="btn primary" type="button" id="clearGo">Clear them</button></div>
+  </div>
+</dialog>
+
+<dialog id="delDlg" aria-labelledby="delTitle">
+  <div class="dh"><h3 id="delTitle">Delete this cell from your copy?</h3></div>
+  <div class="db">
+    <div id="delBody"></div>
+    <div class="row" style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" type="button" id="delKeep">Keep it</button><button class="btn danger" type="button" id="delGo">Delete it</button></div>
+  </div>
+</dialog>
+
+<dialog id="help">
+  <div class="dh"><h3>Preparing notebooks for the tutor</h3><button class="btn ghost" id="helpClose">Close</button></div>
+  <div class="db prose">
+    <p id="helpIntro">Any Jupyter or Colab <code>.ipynb</code> works as it is. Students open this page, choose the mode, and load the notebook you gave them with <b>Open notebook</b>. You can share a link that opens a mode and cohort directly by adding a tag to the page address: <code>#practice</code>, <code>#guided</code>, <code>#ics5111</code>, or a combination such as <code>#ari1101-practice</code>.</p>
+    <h4>Exercise cells (practice mode)</h4>
+    <p>A code cell counts as an exercise when it contains <code># YOUR CODE HERE</code>, <code># TODO</code>, <code>...</code> or <code>___</code> placeholders, <code>raise NotImplementedError</code>, or is empty and follows a markdown instruction. The markdown just before the cell is treated as the task.</p>
+    <h4>Optional tutor metadata</h4>
+    <p>Add a <code>tutor</code> object to a cell's metadata (in Jupyter: <i>Edit Cell Metadata</i>; or via a script) to steer the tutor:</p>
+<pre>"metadata": {"tutor": {
+  "predict": true,                 // guided: hide output until the student predicts
+  "question": {                    // your own checkpoint question, asked after the cell runs
+    "type": "mcq",
+    "question": "What does the 50% row in describe() show?",
+    "options": ["Mean", "Median", "Half the max", "Std"],
+    "answer": 1,
+    "explanation": "The 50th percentile is the median."
+  },
+  "exercise": true,                // force a cell to be an exercise
+  "solution": "model.fit(X_train, y_train)"   // reference for marking; never shown
+}}</pre>
+    <p>Short-answer questions use <code>"type": "short"</code> with an <code>"answer_guide"</code> instead of options. An experiment asks students to change code and interpret the new output; the tutor waits until they have changed the code and re-run the right cells, then marks their reading of the result:</p>
+<pre>"question": {
+  "type": "experiment",
+  "task": "Make the test set bigger and see how the score moves.",
+  "steps": ["In the cell above, change test_size=0.2 to test_size=0.5.",
+            "Run that cell, then run this one again."],
+  "question": "What happened to the test RMSE, and why?",
+  "answer_guide": "Training rows fall from 48 to 30; RMSE rises from 4.33 to 5.17 ...",
+  "hint": "test_size is an argument of train_test_split."
+}</pre>
+    <p>The experiment is attached to the cell whose output the student should read. The change can be in that cell or an earlier one. Students can put the original code back with one click, which re-runs the affected cells. Cells tagged <code>solution</code> are hidden and used as the reference for the exercise above them.</p>
+    <p><b>Keep in mind:</b> a reference solution is inside the file you hand out, so a student who opens the raw JSON can read it. Use it for self-study practice, not for marked work.</p>
+    <h4>What runs</h4>
+    <p id="helpRuns">Python 3.12 in the browser, with NumPy, pandas, Matplotlib, seaborn, SciPy and scikit-learn. No internet from Python, no <code>!pip</code>, no <code>input()</code>, and no Google Drive mounting. Opened in Claude, the tutor uses Claude on each student's own account and asks them to allow it first. In the VS Code extension it uses Gemini, through each student's API key or a course server.</p>
+    <h4>Licence and source code</h4>
+    <p>Notebook Tutor is free software under the GNU Affero General Public License, version 3 (AGPL-3.0). Its complete source code is at <a href="https://github.com/charlieabela/notebook-tutor" target="_blank" rel="noopener">github.com/charlieabela/notebook-tutor</a>. If you change the tutor and offer it to others, including over a network, the licence asks you to share your version's source code under the same terms.</p>
+  </div>
+</dialog>
+
+<script type="text/x-python" id="rt-src">import sys, io, os, re, json, base64, types, linecache, traceback, warnings
+os.environ["MPLBACKEND"] = "AGG"
+from pyodide.code import CodeRunner
+
+NS = {"__name__": "__main__"}
+_rich = []
+_count = [0]
+_MAX_TEXT = 20000
+
+
+def _short(o, n=300):
+    try:
+        r = repr(o)
+    except Exception:
+        r = "<" + type(o).__name__ + ">"
+    return r if len(r) <= n else r[:n] + "…"
+
+
+def _fmt(o):
+    if o is None:
+        return None
+    try:
+        h = getattr(o, "_repr_html_", None)
+        if callable(h):
+            html = h()
+            if html:
+                txt = _short(o, 2500)
+                try:
+                    import pandas as pd
+                    if isinstance(o, (pd.DataFrame, pd.Series)):
+                        txt = o.to_string(max_rows=25, max_cols=12)
+                except Exception:
+                    pass
+                return {"kind": "html", "html": html, "text": txt}
+    except Exception:
+        pass
+    m = getattr(o, "_repr_markdown_", None)
+    if callable(m):
+        try:
+            return {"kind": "markdown", "text": m()}
+        except Exception:
+            pass
+    return {"kind": "text", "text": _short(o, _MAX_TEXT)}
+
+
+def display(*objs, **kw):
+    for o in objs:
+        f = _fmt(o)
+        if f:
+            _rich.append(f)
+
+
+class HTML:
+    def __init__(self, data=None, **kw):
+        self.data = data or ""
+    def _repr_html_(self):
+        return self.data
+    def __repr__(self):
+        return "<IPython.display.HTML object>"
+
+
+class Markdown:
+    def __init__(self, data=None, **kw):
+        self.data = data or ""
+    def _repr_markdown_(self):
+        return self.data
+    def __repr__(self):
+        return self.data
+
+
+_ip = types.ModuleType("IPython")
+_ipd = types.ModuleType("IPython.display")
+_ipd.display, _ipd.HTML, _ipd.Markdown = display, HTML, Markdown
+_ip.display = _ipd
+_ip.get_ipython = lambda: None
+_ip.version_info = (8, 0, 0)
+sys.modules.setdefault("IPython", _ip)
+sys.modules.setdefault("IPython.display", _ipd)
+NS["display"] = display
+
+
+def _no_input(*a, **k):
+    raise RuntimeError("input() cannot read from the keyboard here. Assign the value directly, e.g. name = 'Maria'.")
+
+
+NS["input"] = _no_input
+
+
+def _clean(src):
+    out, notes = [], []
+    for ln in src.split("\n"):
+        s = ln.strip()
+        if s.startswith("!") or s.startswith("%"):
+            notes.append(s)
+            indent = ln[: len(ln) - len(ln.lstrip())]
+            out.append(indent + "pass" if indent else "")
+        else:
+            out.append(ln)
+    return "\n".join(out), notes
+
+
+def _figures():
+    if "matplotlib.pyplot" not in sys.modules:
+        return [], []
+    import matplotlib.pyplot as plt
+    imgs, desc = [], []
+    for n in plt.get_fignums():
+        fig = plt.figure(n)
+        b = io.BytesIO()
+        fig.savefig(b, format="png", dpi=110, bbox_inches="tight")
+        imgs.append(base64.b64encode(b.getvalue()).decode())
+        parts = []
+        for ax in fig.get_axes():
+            d = []
+            if ax.get_title():
+                d.append(f"title={ax.get_title()!r}")
+            d.append(f"xlabel={ax.get_xlabel()!r}")
+            d.append(f"ylabel={ax.get_ylabel()!r}")
+            if ax.lines:
+                d.append(f"{len(ax.lines)} line(s)")
+            if ax.collections:
+                d.append(f"{len(ax.collections)} scatter/collection(s) with {sum(len(c.get_offsets()) for c in ax.collections if hasattr(c, 'get_offsets'))} points")
+            if ax.patches:
+                d.append(f"{len(ax.patches)} bar/patch(es)")
+            leg = ax.get_legend()
+            if leg:
+                d.append("legend=" + ", ".join(t.get_text() for t in leg.get_texts()))
+            parts.append("axes(" + "; ".join(d) + ")")
+        desc.append(f"Figure {len(imgs)}: " + " ".join(parts))
+    plt.close("all")
+    return imgs, desc
+
+
+def _format_error(e, fname):
+    te = traceback.TracebackException.from_exception(e)
+    keep = [f for f in te.stack if f.filename.startswith("<cell") or not re.search(r"(/pyodide/|_pyodide|tutor_rt|<exec>)", f.filename or "")]
+    te.stack = traceback.StackSummary.from_list(keep)
+    tb = "".join(te.format())
+    line = None
+    for f in keep:
+        if f.filename == fname:
+            line = f.lineno
+    if isinstance(e, SyntaxError) and e.filename == fname:
+        line = e.lineno
+    return {"ename": type(e).__name__, "evalue": str(e), "traceback": tb, "line": line}
+
+
+async def run_cell(src):
+    global _rich
+    _rich = []
+    _count[0] += 1
+    fname = f"<cell {_count[0]}>"
+    code, notes = _clean(src)
+    linecache.cache[fname] = (len(code), None, code.splitlines(True), fname)
+    out, err = io.StringIO(), io.StringIO()
+    res = {"count": _count[0], "notes": notes, "error": None}
+    old = sys.stdout, sys.stderr
+    sys.stdout, sys.stderr = out, err
+    try:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message=".*non-interactive.*")
+            warnings.filterwarnings("ignore", message=".*FigureCanvasAgg.*")
+            runner = CodeRunner(code, filename=fname, return_mode="last_expr", quiet_trailing_semicolon=True).compile()
+            val = await runner.run_async(NS)
+            f = _fmt(val)
+            if f:
+                _rich.append(f)
+    except BaseException as e:
+        res["error"] = _format_error(e, fname)
+    finally:
+        sys.stdout, sys.stderr = old
+    try:
+        imgs, desc = _figures()
+    except Exception as e:
+        imgs, desc = [], [f"(figure could not be drawn: {e})"]
+    so, se = out.getvalue(), err.getvalue()
+    res["stdout"] = so[:_MAX_TEXT] + ("\n…(output truncated)" if len(so) > _MAX_TEXT else "")
+    se = "\n".join(l for l in se.split("\n") if "building the font cache" not in l).strip()
+    res["stderr"] = se[:5000]
+    res["results"] = _rich
+    res["figures"] = imgs
+    res["figure_desc"] = desc
+    return json.dumps(res)
+
+
+def vars_summary():
+    rows = []
+    try:
+        import pandas as pd
+    except Exception:
+        pd = None
+    try:
+        import numpy as np
+    except Exception:
+        np = None
+    for k, v in list(NS.items()):
+        if k.startswith("_") or k in ("display", "input", "In", "Out", "exit", "quit"):
+            continue
+        if isinstance(v, types.ModuleType):
+            rows.append(f"{k}: module {v.__name__}")
+            continue
+        try:
+            if pd is not None and isinstance(v, pd.DataFrame):
+                cols = ", ".join(f"{c}:{t}" for c, t in list(v.dtypes.astype(str).items())[:12])
+                rows.append(f"{k}: DataFrame shape={v.shape} columns=[{cols}]")
+            elif pd is not None and isinstance(v, pd.Series):
+                rows.append(f"{k}: Series len={len(v)} dtype={v.dtype} name={v.name!r}")
+            elif np is not None and isinstance(v, np.ndarray):
+                rows.append(f"{k}: ndarray shape={v.shape} dtype={v.dtype}")
+            elif isinstance(v, type):
+                rows.append(f"{k}: class {v.__name__}")
+            elif hasattr(v, "get_params") and hasattr(v, "fit"):
+                fitted = any(a.endswith("_") and not a.startswith("_") for a in vars(v))
+                rows.append(f"{k}: {type(v).__name__} ({'fitted' if fitted else 'not fitted'})")
+            elif isinstance(v, type):
+                rows.append(f"{k}: class {v.__name__}")
+            elif callable(v):
+                if getattr(v, "__module__", "") == "__main__":
+                    rows.append(f"{k}: function defined in the notebook")
+            elif isinstance(v, (list, tuple, dict, set)):
+                rows.append(f"{k}: {type(v).__name__} len={len(v)} {_short(v, 80)}")
+            else:
+                rows.append(f"{k}: {type(v).__name__} = {_short(v, 80)}")
+        except Exception:
+            rows.append(f"{k}: {type(v).__name__}")
+    return "\n".join(rows[:60]) or "(no variables yet)"
+
+
+def reset():
+    NS.clear()
+    NS.update({"__name__": "__main__", "display": display, "input": _no_input})
+    _count[0] = 0
+    if "matplotlib.pyplot" in sys.modules:
+        sys.modules["matplotlib.pyplot"].close("all")
+
+
+def write_file(name, data):
+    with open(name, "wb") as fh:
+        fh.write(bytes(data))
+    return os.path.abspath(name)
+</script>
+<script type="application/json" id="nb-guided">{"nbformat": 4, "nbformat_minor": 5, "metadata": {"title": "Simple linear regression: hours studied vs exam mark", "kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"}, "language_info": {"name": "python"}}, "cells": [{"cell_type": "markdown", "metadata": {}, "source": ["# Simple linear regression: hours studied vs exam mark\n", "\n", "**ARI1101 · Week 4 · Prepare before the session**\n", "\n", "In this notebook you will:\n", "\n", "1. build a small dataset with **NumPy** and **pandas**,\n", "2. look at it with summary statistics and a scatter plot,\n", "3. fit a straight line *by hand* using the least-squares formulas,\n", "4. measure how good the line is with **MSE** and **R²**,\n", "5. repeat the fit with **scikit-learn** on a train/test split.\n", "\n", "Run each code cell in order. The tutor explains what each cell does and checks your understanding as you go."]}, {"cell_type": "code", "metadata": {}, "execution_count": null, "outputs": [], "source": ["import numpy as np\n", "import pandas as pd\n", "import matplotlib.pyplot as plt"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## 1. A dataset we control\n", "\n", "Real data is messy, so we start with **synthetic** data where we know the true relationship.\n", "Each of 60 students studied between 0 and 12 hours. Their mark follows\n", "\n", "$$\\text{mark} = 35 + 4.2 \\times \\text{hours} + \\text{noise}$$\n", "\n", "The noise stands for everything else that affects a mark. Fixing the random **seed** (42) means everyone gets exactly the same numbers."]}, {"cell_type": "code", "metadata": {"tutor": {"predict": true}}, "execution_count": null, "outputs": [], "source": ["rng = np.random.default_rng(42)\n", "\n", "hours = rng.uniform(0, 12, size=60).round(1)\n", "noise = rng.normal(0, 6, size=60)\n", "mark = (35 + 4.2 * hours + noise).clip(0, 100).round(0)\n", "\n", "df = pd.DataFrame({\"hours\": hours, \"mark\": mark})\n", "df.head()"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## 2. First look at the data\n", "\n", "`df.shape` gives (rows, columns). `df.describe()` summarises each numeric column: count, mean, standard deviation, minimum, quartiles and maximum."]}, {"cell_type": "code", "metadata": {"tutor": {"question": {"type": "mcq", "question": "In the describe() table, the 50% row for 'mark' is closest to which statistic?", "options": ["The mean mark", "The median mark", "Half of the maximum mark", "The standard deviation"], "answer": 1, "explanation": "The 50% row is the 50th percentile: half the marks are below it and half above. That is the median. The mean has its own row."}}}, "execution_count": null, "outputs": [], "source": ["print(\"Rows, columns:\", df.shape)\n", "df.describe()"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## 3. Visualise before you model\n", "\n", "A scatter plot shows whether a straight line is a sensible model at all."]}, {"cell_type": "code", "metadata": {}, "execution_count": null, "outputs": [], "source": ["plt.figure(figsize=(6, 4))\n", "plt.scatter(df[\"hours\"], df[\"mark\"], alpha=0.7)\n", "plt.xlabel(\"Hours studied\")\n", "plt.ylabel(\"Exam mark\")\n", "plt.title(\"Hours studied vs exam mark\")\n", "plt.show()"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## 4. Fitting the line by hand\n", "\n", "The model is $\\hat{y} = \\beta_0 + \\beta_1 x$. Least squares chooses the slope and intercept that make the sum of squared errors as small as possible:\n", "\n", "$$\\beta_1 = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{\\sum_i (x_i - \\bar{x})^2}, \\qquad \\beta_0 = \\bar{y} - \\beta_1 \\bar{x}$$"]}, {"cell_type": "code", "metadata": {"tutor": {"question": {"type": "short", "question": "The true slope used to generate the data was 4.2, but the fitted slope is not exactly 4.2. Why not?", "answer_guide": "Because of the random noise added to each mark (and the sample being only 60 students, plus clipping/rounding). Least squares estimates the slope from this particular noisy sample, so the estimate differs from the true value; with more data it would usually get closer."}}}, "execution_count": null, "outputs": [], "source": ["x = df[\"hours\"].to_numpy()\n", "y = df[\"mark\"].to_numpy()\n", "\n", "x_bar, y_bar = x.mean(), y.mean()\n", "beta_1 = np.sum((x - x_bar) * (y - y_bar)) / np.sum((x - x_bar) ** 2)\n", "beta_0 = y_bar - beta_1 * x_bar\n", "\n", "print(f\"slope (beta_1)     = {beta_1:.3f}\")\n", "print(f\"intercept (beta_0) = {beta_0:.3f}\")"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## 5. Draw the fitted line"]}, {"cell_type": "code", "metadata": {}, "execution_count": null, "outputs": [], "source": ["x_line = np.linspace(0, 12, 100)\n", "y_line = beta_0 + beta_1 * x_line\n", "\n", "plt.figure(figsize=(6, 4))\n", "plt.scatter(x, y, alpha=0.7, label=\"students\")\n", "plt.plot(x_line, y_line, color=\"tab:red\", linewidth=2, label=\"least-squares line\")\n", "plt.xlabel(\"Hours studied\")\n", "plt.ylabel(\"Exam mark\")\n", "plt.legend()\n", "plt.show()"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## 6. How good is the line?\n", "\n", "A **residual** is the actual value minus the predicted value. Two common measures:\n", "\n", "- **MSE** (mean squared error): the average squared residual. Its unit is *marks squared*, so we often take its square root (**RMSE**) to get back to marks.\n", "- **R²**: the share of the variation in marks that the line explains. 1 is perfect; 0 is no better than predicting the mean every time."]}, {"cell_type": "code", "metadata": {}, "execution_count": null, "outputs": [], "source": ["y_hat = beta_0 + beta_1 * x\n", "residuals = y - y_hat\n", "\n", "mse = np.mean(residuals ** 2)\n", "rmse = np.sqrt(mse)\n", "r2 = 1 - np.sum(residuals ** 2) / np.sum((y - y_bar) ** 2)\n", "\n", "print(f\"MSE  = {mse:.2f}\")\n", "print(f\"RMSE = {rmse:.2f} marks\")\n", "print(f\"R²   = {r2:.3f}\")"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## 7. The same model with scikit-learn\n", "\n", "In practice we use a library, and we test the model on data it **did not see** during fitting.\n", "`train_test_split` keeps 20% of the students aside as a test set."]}, {"cell_type": "code", "metadata": {"tutor": {"predict": true}}, "execution_count": null, "outputs": [], "source": ["from sklearn.model_selection import train_test_split\n", "from sklearn.linear_model import LinearRegression\n", "\n", "X = df[[\"hours\"]]          # a DataFrame: scikit-learn expects 2-D features\n", "y = df[\"mark\"]             # a Series: the target\n", "\n", "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)\n", "\n", "model = LinearRegression()\n", "model.fit(X_train, y_train)\n", "\n", "print(\"Training rows:\", len(X_train), \"| Test rows:\", len(X_test))\n", "print(f\"slope = {model.coef_[0]:.3f}, intercept = {model.intercept_:.3f}\")"]}, {"cell_type": "code", "metadata": {"tutor": {"question": {"type": "experiment", "task": "Hold back half of the students for testing instead of 20%, and see what happens to the model and its score.", "steps": ["In the code cell above, change `test_size=0.2` to `test_size=0.5`.", "Run that cell. Check the new number of training and test rows, and the new slope.", "Run this cell again and compare the test RMSE and R² with the values you had before."], "question": "What happened to the number of training rows, the slope and the test RMSE? Why can the test score change when only the split changed?", "answer_guide": "Training rows fall from 48 to 30 and test rows rise from 12 to 30. The slope moves from about 4.28 to about 4.50, further from the true 4.2, because it is estimated from fewer students. Test RMSE rises from about 4.33 to about 5.17 marks and R² falls from 0.915 to 0.879. Two things changed at once: the model learned from less data, and it is now scored on a different, larger group of students. A single train/test split gives one noisy estimate of performance (changing random_state moves it too), which is why cross-validation averages over several splits.", "hint": "`test_size` is an argument of `train_test_split` in the cell above. After changing it, run that cell first, otherwise `X_train` and `X_test` still hold the old split."}}}, "execution_count": null, "outputs": [], "source": ["from sklearn.metrics import mean_squared_error, r2_score\n", "\n", "y_pred = model.predict(X_test)\n", "print(f\"Test RMSE = {np.sqrt(mean_squared_error(y_test, y_pred)):.2f} marks\")\n", "print(f\"Test R²   = {r2_score(y_test, y_pred):.3f}\")"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## 8. Using the model, and its limits\n", "\n", "Predict the mark for a student who studies 5 hours, and for one who studies 20 hours.\n", "Look carefully at the second prediction."]}, {"cell_type": "code", "metadata": {"tutor": {"question": {"type": "mcq", "question": "Why should we not trust the prediction for 20 hours?", "options": ["Because 20 is an even number", "Because the training data only covers 0 to 12 hours, so 20 hours is extrapolation", "Because the test R² is too low", "Because scikit-learn cannot predict values above 100"], "answer": 1, "explanation": "The model only saw students who studied up to 12 hours. Beyond that range we have no evidence the straight line still holds, and here it even predicts a mark above the 100 maximum."}}}, "execution_count": null, "outputs": [], "source": ["new_students = pd.DataFrame({\"hours\": [5, 20]})\n", "new_students[\"predicted_mark\"] = model.predict(new_students[[\"hours\"]]).round(1)\n", "new_students"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## Before the session\n", "\n", "Write two or three sentences in your reflective diary:\n", "\n", "- What does the slope mean in plain words for this dataset?\n", "- Which number would you report to a non-technical reader, RMSE or R², and why?"]}]}</script>
+<script type="application/json" id="nb-practice">{"nbformat": 4, "nbformat_minor": 5, "metadata": {"title": "Practice: apartment rents and floor area", "kernelspec": {"name": "python3", "display_name": "Python 3", "language": "python"}, "language_info": {"name": "python"}}, "cells": [{"cell_type": "markdown", "metadata": {}, "source": ["# Practice: apartment rents and floor area\n", "\n", "**ARI1101 · Week 4 · Practise after the session**\n", "\n", "The cells that contain `# YOUR CODE HERE` are yours to complete. Write your code, run it, and the tutor will check both your **Python** and your **data-science reasoning**. Ask for a hint whenever you are stuck: hints start general and become more specific.\n", "\n", "The dataset is **synthetic**: 120 apartments with floor area (m²) and monthly rent (€)."]}, {"cell_type": "code", "metadata": {}, "execution_count": null, "outputs": [], "source": ["import numpy as np\n", "import pandas as pd\n", "import matplotlib.pyplot as plt\n", "\n", "rng = np.random.default_rng(7)\n", "area = rng.uniform(40, 160, size=120).round(0)\n", "rent = (250 + 7.5 * area + rng.normal(0, 120, size=120)).round(0)\n", "rentals = pd.DataFrame({\"area_m2\": area, \"rent_eur\": rent})\n", "print(\"Data ready:\", rentals.shape)"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## Exercise 1 · First look\n", "\n", "Show the **first 5 rows** of `rentals`, then print how many **rows and columns** it has."]}, {"cell_type": "code", "metadata": {"tutor": {"exercise": true, "solution": "print(rentals.head())\nprint(rentals.shape)"}}, "execution_count": null, "outputs": [], "source": ["# YOUR CODE HERE"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## Exercise 2 · Centre of the data\n", "\n", "Compute the **mean** and the **median** monthly rent and print both. In a comment, say which one is larger."]}, {"cell_type": "code", "metadata": {"tutor": {"exercise": true, "solution": "mean_rent = rentals['rent_eur'].mean()\nmedian_rent = rentals['rent_eur'].median()\nprint(mean_rent, median_rent)"}}, "execution_count": null, "outputs": [], "source": ["# YOUR CODE HERE"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## Exercise 3 · Plot it\n", "\n", "Draw a **scatter plot** with floor area on the x-axis and rent on the y-axis. Label both axes and give the plot a title."]}, {"cell_type": "code", "metadata": {"tutor": {"exercise": true, "solution": "plt.scatter(rentals['area_m2'], rentals['rent_eur'])\nplt.xlabel('Floor area (m²)')\nplt.ylabel('Monthly rent (€)')\nplt.title('Rent vs floor area')\nplt.show()"}}, "execution_count": null, "outputs": [], "source": ["# YOUR CODE HERE"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## Exercise 4 · Features, target and split\n", "\n", "Create `X` (a **DataFrame** holding only `area_m2`) and `y` (the `rent_eur` column).\n", "Then split them into training and test sets with **20%** for testing and `random_state=0`."]}, {"cell_type": "code", "metadata": {"tutor": {"exercise": true, "solution": "X = rentals[['area_m2']]\ny = rentals['rent_eur']\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)"}}, "execution_count": null, "outputs": [], "source": ["from sklearn.model_selection import train_test_split\n", "\n", "X = ...\n", "y = ...\n", "X_train, X_test, y_train, y_test = ___"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## Exercise 5 · Fit a linear regression\n", "\n", "Fit a `LinearRegression` model on the **training** data only. Print the slope and the intercept.\n", "In a comment, explain what the slope means in euros and square metres."]}, {"cell_type": "code", "metadata": {"tutor": {"exercise": true, "solution": "model = LinearRegression()\nmodel.fit(X_train, y_train)\nprint(model.coef_[0], model.intercept_)\n# each extra m² adds about €7.5 to the monthly rent"}}, "execution_count": null, "outputs": [], "source": ["from sklearn.linear_model import LinearRegression\n", "\n", "# YOUR CODE HERE"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## Exercise 6 · Evaluate on unseen data\n", "\n", "Use the model to predict rents for the **test** set. Print the **RMSE** (in euros) and the **R²**."]}, {"cell_type": "code", "metadata": {"tutor": {"exercise": true, "solution": "y_pred = model.predict(X_test)\nprint(np.sqrt(mean_squared_error(y_test, y_pred)))\nprint(r2_score(y_test, y_pred))"}}, "execution_count": null, "outputs": [], "source": ["from sklearn.metrics import mean_squared_error, r2_score\n", "\n", "# YOUR CODE HERE"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## Exercise 7 · From numbers to a yes/no question\n", "\n", "Call an apartment **expensive** if its rent is above €1,200. Create this label, fit a `LogisticRegression`\n", "on floor area using the **same** train/test split, and report the **accuracy** on the test set.\n", "Finally, print the predicted **probability** that a 140 m² apartment is expensive."]}, {"cell_type": "code", "metadata": {"tutor": {"exercise": true, "solution": "expensive = (rentals['rent_eur'] > 1200).astype(int)\ny_train_c = expensive.loc[y_train.index]\ny_test_c = expensive.loc[y_test.index]\nclf = LogisticRegression()\nclf.fit(X_train, y_train_c)\nprint(accuracy_score(y_test_c, clf.predict(X_test)))\nprint(clf.predict_proba(pd.DataFrame({'area_m2': [140]}))[0, 1])"}}, "execution_count": null, "outputs": [], "source": ["from sklearn.linear_model import LogisticRegression\n", "from sklearn.metrics import accuracy_score\n", "\n", "# YOUR CODE HERE"]}, {"cell_type": "markdown", "metadata": {}, "source": ["## Reflect\n", "\n", "Linear regression predicts a **number**; logistic regression predicts a **probability** of belonging to a class.\n", "Which of the two questions above would a landlord find more useful, and why?"]}]}</script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]], processEscapes: true },
+  svg: { fontCache: "local" },
+  options: { enableMenu: false },
+  startup: { typeset: false, ready() { MathJax.startup.defaultReady(); MathJax.startup.promise.then(() => { window.__mjReady && window.__mjReady(); }); } }
+};
+</script>
+<!--NT_HOST-->
+<script src="/static/vendor/codemirror/codemirror.js"></script>
+<script src="/static/vendor/codemirror/python.js"></script>
+<script src="/static/vendor/codemirror/matchbrackets.js"></script>
+<script src="/static/vendor/marked/marked.min.js"></script>
+<script src="/static/vendor/dompurify/purify.min.js"></script>
+<script src="/static/vendor/mathjax/tex-svg-full.js" async></script>
+<script>
+"use strict";
+/* ============================================================ helpers */
+const $ = (s, r = document) => r.querySelector(s);
+function el(tag, props, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v;
+    else if (k === "html") e.innerHTML = v;
+    else if (k === "text") e.textContent = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const clip = (s, n) => (s && s.length > n ? s.slice(0, n) + "\n…(truncated)" : s || "");
+// The page runs in two hosts: a Claude artifact ("web") and the VS Code extension ("vscode"), which sets window.NBT_HOST.
+const HOST = window.NBT_HOST || { kind: "web" };
+const IN_VSCODE = HOST.kind === "vscode";
+// "local": the standalone tutor on the student's computer (a Jupyter kernel in the notebook's folder)
+const IS_LOCAL = HOST.kind === "local";
+const HOSTED_FILE = IN_VSCODE || IS_LOCAL; // the notebook lives in a file the host saves
+const store = {
+  get(k, d) { if (HOST.store) { const v = HOST.store.get(k); return v === undefined || v === null ? d : v; } try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { if (HOST.store) { HOST.store.set(k, v); return; } try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+function hash(str) { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+const ICON_RUN = '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M4.5 2.5v11l9-5.5z"/></svg>';
+const SV = (d) => `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICONS = {
+  explain: SV('<path d="M6 12.5h4M6.5 14.5h3M8 1.8a4.2 4.2 0 0 0-2.5 7.6c.5.4.8.9.8 1.5v.3h3.4v-.3c0-.6.3-1.1.8-1.5A4.2 4.2 0 0 0 8 1.8z"/>'),
+  quiz: SV('<circle cx="8" cy="8" r="6.3"/><path d="M6.2 6.2a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.4"/><circle cx="8" cy="11.6" r=".5" fill="currentColor"/>'),
+  check: SV('<path d="M3 8.5l3.2 3L13 4.5"/>'),
+  hint: SV('<path d="M2.5 8a5.5 5.5 0 1 0 11 0 5.5 5.5 0 0 0-11 0z"/><path d="M8 5v3.5M8 10.8v.2"/>'),
+  ask: SV('<path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/>'),
+  undo: SV('<path d="M5 6.5H10a3 3 0 0 1 0 6H7"/><path d="M7 4L4.5 6.5 7 9"/>'),
+  eye: SV('<path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z"/><path d="M2.5 13.5l11-11"/>'),
+  chev: SV('<path d="M4 6l4 4 4-4"/>'),
+  try: SV('<path d="M6 1.8h4M6.7 1.8v4.3L2.9 12.6a1.1 1.1 0 0 0 1 1.6h8.2a1.1 1.1 0 0 0 1-1.6L9.3 6.1V1.8"/><path d="M4.6 9.8h6.8"/>'),
+  restore: SV('<path d="M2.8 8a5.2 5.2 0 1 0 1.6-3.8"/><path d="M2.6 2.2v2.8h2.8"/>'),
+  plus: SV('<path d="M8 3v10M3 8h10"/>'),
+  edit: SV('<path d="M10.5 2.5l3 3L6 13H3v-3z"/>'),
+  trash: SV('<path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/>'),
+};
+function actBtn(label, icon, onclick, cls = "coach", title) {
+  return el("button", { class: "act " + cls, type: "button", title: title || null, onclick, html: (ICONS[icon] || "") + "<span>" + esc(label) + "</span>" });
+}
+
+/* ============================================================ markdown + maths */
+if (window.DOMPurify) {
+  DOMPurify.addHook("afterSanitizeAttributes", (n) => { if (n.tagName === "A") { n.setAttribute("target", "_blank"); n.setAttribute("rel", "noopener"); } });
+}
+function mdToHtml(src, attachments) {
+  const math = [];
+  const keep = (m) => { math.push(m); return `@@M${math.length - 1}@@`; };
+  let s = String(src || "");
+  // protect code first so $ inside code is left alone
+  const codes = [];
+  s = s.replace(/```[\s\S]*?```|`[^`\n]+`/g, (m) => { codes.push(m); return `@@C${codes.length - 1}@@`; });
+  s = s.replace(/\$\$[\s\S]+?\$\$/g, keep).replace(/\\\[[\s\S]+?\\\]/g, keep).replace(/\\\([\s\S]+?\\\)/g, keep)
+       .replace(/(^|[^\\$\w])\$(?=\S)([^$\n]+?)\$(?!\w)/g, (m, pre, body) => pre + keep("$" + body + "$"));
+  s = s.replace(/@@C(\d+)@@/g, (m, i) => codes[+i]);
+  if (attachments) s = s.replace(/attachment:([^\s)"']+)/g, (m, name) => {
+    const a = attachments[name]; if (!a) return m;
+    const [mime, data] = Object.entries(a)[0]; return `data:${mime};base64,${Array.isArray(data) ? data.join("") : data}`;
+  });
+  let html = window.marked ? marked.parse(s, { gfm: true, breaks: false }) : "<p>" + esc(s) + "</p>";
+  html = html.replace(/@@M(\d+)@@/g, (m, i) => esc(math[+i]));
+  return window.DOMPurify ? DOMPurify.sanitize(html) : esc(s);
+}
+const pendingMath = new Set();
+function typeset(node) {
+  if (!node) return;
+  if (window.MathJax && MathJax.typesetPromise && MathJax.startup && MathJax.startup.document) {
+    MathJax.typesetPromise([node]).catch(() => {});
+  } else pendingMath.add(node);
+}
+window.__mjReady = () => { for (const n of pendingMath) typeset(n); pendingMath.clear(); };
+
+/* ============================================================ state */
+const S = {
+  mode: "guided",
+  level: store.get("nbt:level", "ari1101"),
+  note: store.get("nbt:note", ""),
+  settings: Object.assign({ explain: true, predict: true, review: true, quiz: 3, quizPractice: true, speed: "quick" }, store.get("nbt:settings", {})),
+  nb: null, cells: [], active: -1, isSample: true, key: "",
+  py: null, pyReady: null, files: [],
+  sample: undefined, sampleOff: false,
+  chat: [], asked: [], askedTypes: { mcq: 0, short: 0, experiment: 0 }, exp: null, runSeq: 0, score: { right: 0, total: 0 }, sinceQuiz: 0,
+  gen: 0, live: new Set(),   // "Clear notes" starts a new generation: work queued or running for an older one is dropped
+};
+
+/* ============================================================ notebook parsing */
+const EX_RE = /#\s*(YOUR CODE HERE|TODO\b)|^\s*\.\.\.\s*$|=\s*\.\.\.\s*(#.*)?$|_{3,}|raise\s+NotImplementedError/mi;
+function srcOf(c) { return Array.isArray(c.source) ? c.source.join("") : (c.source || ""); }
+function parseNotebook(json, name, isSample) {
+  let nb;
+  try { nb = typeof json === "string" ? JSON.parse(json) : json; } catch { throw new Error("That file is not valid JSON, so it can't be a Jupyter notebook."); }
+  if (!nb || !Array.isArray(nb.cells)) throw new Error("This file has no notebook cells. Choose a Jupyter or Colab .ipynb file.");
+  const cells = [];
+  let lastEx = null, prevType = null;
+  nb.cells.forEach((raw, i) => {
+    const meta = raw.metadata || {};
+    const tm = meta.tutor || {};
+    const tags = (meta.tags || []).map(String);
+    const fileSource = srcOf(raw);
+    // a saved student file keeps the lecturer's code in metadata.tutor.original and the student's code as the source
+    const added = tm.added === true;          // a cell the student added in the tutor: its file content is its source
+    const source = raw.cell_type === "code" && !added && typeof tm.original === "string" ? tm.original : fileSource;
+    const c = { id: "c" + i, raw, type: raw.cell_type, source, meta, tm, tags, attachments: raw.attachments, outputs: null, added };
+    if (c.type === "code" && fileSource !== source) c.edit = fileSource;
+    if (c.type === "code") { if (tm.status) c.exStatus = tm.status; if (tm.hints) c.hints = +tm.hints || 0; }
+    if (c.type === "code") {
+      if (tags.includes("solution") || tm.role === "solution") {
+        c.hidden = true; if (lastEx && !lastEx.solution) lastEx.solution = source;
+      } else {
+        c.isEx = tm.exercise === true || tags.includes("exercise") || EX_RE.test(source) || (!source.trim() && prevType === "markdown");
+        if (tm.exercise === false || added) c.isEx = false;
+        c.solution = tm.solution || null;
+        c.predict = !!(tm.predict || tags.includes("predict"));
+        c.question = tm.question || null;
+        if (c.isEx) lastEx = c;
+      }
+    }
+    if (c.type === "markdown" || c.type === "code") cells.push(c);
+    else if (c.type === "raw") { c.type = "markdown"; c.source = "```\n" + source + "\n```"; cells.push(c); }
+    prevType = c.type;
+  });
+  let title = (nb.metadata && nb.metadata.title) || "";
+  if (!title) { const m = cells.find((c) => c.type === "markdown" && /^#\s+/m.test(c.source)); if (m) title = m.source.match(/^#\s+(.+)$/m)[1].replace(/[*_`]/g, ""); }
+  return { nb, name, title: title || name.replace(/\.ipynb$/i, ""), cells, isSample };
+}
+
+/* ============================================================ python runtime */
+const PYO = "https://cdn.jsdelivr.net/npm/pyodide@0.27.7/";
+const PY_BASE = HOST.pyBase || new URL("py/", location.href).href;
+function loadScript(src) {
+  return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("Could not load " + src)); document.head.append(s); });
+}
+function setPy(state, text) {
+  const chip = $("#pyChip"); chip.className = "chip " + state; $("#pyText").textContent = text;
+}
+// The standalone tutor runs code in a Jupyter kernel through the local server.
+function localRuntime() {
+  return {
+    run: (code) => HOST.run(code),
+    vars: () => HOST.vars(),
+    reset: () => {
+      setPy("busy", "Restarting Python…");
+      S.pyReady = HOST.resetKernel().then(() => { setPy("ok", "Python ready"); return S.py; },
+        (e) => { setPy("bad", "Python could not start"); showNotice(`<b>Python could not start.</b> ${esc(e.message || e)}`); throw e; });
+      S.pyReady.catch(() => {});
+      return S.pyReady;
+    },
+  };
+}
+async function bootKernel() {
+  setPy("busy", "Starting Python…");
+  try {
+    await HOST.startKernel();
+    S.py = { local: true }; S.rt = localRuntime();
+    setPy("ok", "Python ready");
+    return S.py;
+  } catch (e) {
+    setPy("bad", "Python could not start");
+    showNotice(`<b>Python could not start.</b> ${esc(e.message || e)}. Check the window where you started the tutor for details.`);
+    throw e;
+  }
+}
+async function bootPython() {
+  if (IS_LOCAL) return bootKernel();
+  setPy("busy", "Starting Python…");
+  try {
+    // Python runs on WebAssembly; some embedded views forbid compiling it
+    try { await WebAssembly.compile(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0])); }
+    catch { throw new Error("this view does not allow WebAssembly, which Python needs"); }
+    // Package archives are published with a ".wasm" suffix (a type artifacts serve); map Pyodide's requests onto them
+    const base = PY_BASE;
+    if (!window.__fetchMapped) {
+      const orig = window.fetch.bind(window);
+      window.fetch = (input, init) => {
+        const url = typeof input === "string" ? input : input instanceof URL ? input.href : input && input.url;
+        if (url && url.startsWith(base) && /\.(whl|zip)$/i.test(url.split(/[?#]/)[0])) return orig(url.split(/[?#]/)[0] + ".wasm", init);
+        return orig(input, init);
+      };
+      window.__fetchMapped = true;
+    }
+    const slow = setTimeout(() => { if (!S.py) setPy("busy", "Still starting Python (large first download)…"); }, 20000);
+    if (HOST.pyBase) {
+      if (typeof loadPyodide !== "function") await loadScript(PY_BASE + "pyodide.js");
+      if (typeof _createPyodideModule !== "function") await loadScript(PY_BASE + "pyodide.asm.js");
+    } else {
+      if (typeof loadPyodide !== "function") { try { await loadScript(PYO + "pyodide.js"); } catch { await loadScript("py/pyodide.js"); } }
+      if (typeof _createPyodideModule !== "function") { try { await loadScript(PYO + "pyodide.asm.js"); } catch { /* the loader fetches it itself */ } }
+    }
+    const py = await loadPyodide({ indexURL: base, stdout: () => {}, stderr: () => {} });
+    py.runPython($("#rt-src").textContent);
+    clearTimeout(slow);
+    S.py = py;
+    S.rt = { run: py.globals.get("run_cell"), vars: py.globals.get("vars_summary"), reset: py.globals.get("reset"), write: py.globals.get("write_file") };
+    for (const f of S.pendingFiles || []) await writeData(f);
+    if (S.hostFiles) writeHostFiles(S.hostFiles);
+    setPy("busy", "Loading NumPy, pandas, Matplotlib…");
+    await py.loadPackage(["numpy", "pandas", "matplotlib"], { messageCallback: () => {} });
+    setPy("ok", "Python ready");
+    return py;
+  } catch (e) {
+    console.error(e);
+    setPy("bad", "Python could not start");
+    showNotice(`<b>Python could not start in this view.</b> ${esc(e.message || e)}. Reload the page; if it keeps failing, try a different browser.`);
+    throw e;
+  }
+}
+const loadedExtra = new Set();
+async function ensurePackages(code) {
+  const py = await S.pyReady;
+  if (/^\s*(import|from)\s+seaborn\b/m.test(code) && !loadedExtra.has("seaborn")) {
+    setPy("busy", "Loading seaborn…");
+    await py.loadPackage(["numpy", "pandas", "matplotlib", "scipy"], { messageCallback: () => {} });
+    await py.loadPackage(PY_BASE + "seaborn-0.13.2-py3-none-any.whl", { messageCallback: () => {} });
+    loadedExtra.add("seaborn");
+  }
+  let msg = null;
+  await py.loadPackagesFromImports(code.replace(/^\s*[!%].*$/gm, ""), { messageCallback: (m) => { if (/^Loading /.test(m) && !msg) { msg = m; setPy("busy", m.replace(/,? ?\b(six|pytz|cycler|packaging|pyparsing|kiwisolver|contourpy|fonttools|pillow|python-dateutil|openblas|joblib|threadpoolctl|matplotlib-pyodide)\b/g, "").replace(/,\s*,/g, ",").replace(/,\s*$/, "") + "…"); } }, errorCallback: () => {} });
+  setPy("ok", "Python ready");
+}
+let runChain = Promise.resolve();
+function pyRun(code) {
+  const job = runChain.then(async () => {
+    if (IS_LOCAL) return await S.rt.run(code);
+    await ensurePackages(code);
+    return JSON.parse(await S.rt.run(code));
+  });
+  runChain = job.catch(() => {});
+  return job;
+}
+async function pyVars() { try { await S.pyReady; return S.rt.vars(); } catch { return "(unavailable)"; } }
+// files from the notebook's folder, sent by the VS Code extension: [{path, data}] with paths relative to the notebook
+function writeHostFiles(files) {
+  S.hostFiles = files;
+  if (!S.py) return;
+  const cwd = S.py.FS.cwd(); // relative to Python's working folder, as the notebook expects
+  for (const f of files) {
+    const full = cwd + "/" + f.path, dir = full.slice(0, full.lastIndexOf("/"));
+    try { S.py.FS.mkdirTree(dir); S.py.FS.writeFile(full, f.data); if (!S.files.includes(f.path)) S.files.push(f.path); } catch (e) { console.warn("could not add", f.path, e); }
+  }
+  renderFiles();
+}
+function setLocalFiles(names) { S.files = names || []; renderFiles(); }
+/* A dataset the notebook needs could not be downloaded (ai-learning-kit's DatasetUnavailable): the kit's own message
+   says what to do; the notice offers the Data files button, and the tutor does not ask the language model about it. */
+function missingData(message) {
+  const m = /Add (\S+) with the Data files button/.exec(message || "") || /(?:Upload|Put) (\S+) /.exec(message || "");
+  S.missingFile = m ? m[1] : null;
+  const what = S.missingFile ? `<code>${esc(S.missingFile)}</code>` : "the data file";
+  showNotice(`<b>A dataset is missing.</b> It could not be downloaded. Add ${what} with <b>Data files › Add data file…</b> (your lecturer provides a copy, for example on the VLE), then run the cell again.`,
+    [el("button", { class: "btn primary", type: "button", text: "Add data file…", onclick: () => $("#dataFile").click() })]);
+}
+async function writeData(file) {
+  if (IS_LOCAL) {
+    try {
+      const r = await HOST.uploadData(file);
+      if (S.missingFile && r.name === S.missingFile) { S.missingFile = null; showNotice(`<b>Added ${esc(r.name)}.</b> Run the cell again: the kit checks the file and keeps it, so you add it only once.`); }
+      else showNotice(`<b>Added ${esc(r.name)}</b> to the notebook's folder. Read it with <code>${esc(r.name)}</code>.`);
+    }
+    catch (e) { showNotice(`<b>Couldn't add ${esc(file.name)}.</b> ${esc(e.message || e)}`); }
+    return;
+  }
+  const buf = new Uint8Array(await file.arrayBuffer());
+  S.py.FS.writeFile(file.name, buf);
+  if (!S.files.includes(file.name)) S.files.push(file.name);
+  renderFiles();
+}
+
+/* ============================================================ rendering the notebook */
+function exStatusTag(c) {
+  const st = c.exStatus;
+  if (st === "done") return el("span", { class: "state done", text: "Done" });
+  if (st === "helped") return el("span", { class: "state partial", text: "Solved with hints" });
+  if (st === "partial") return el("span", { class: "state partial", text: "Almost there" });
+  if (st === "incorrect" || st === "error") return el("span", { class: "state err", text: "Not yet" });
+  return null;
+}
+const hasSubstance = (src) => { const body = src.replace(/^#{1,6}\s.*$/gm, "").replace(/[*_`>|\-]/g, "").trim(); return body.length >= 80 || /\$/.test(src); };
+// keepNotes: re-render after adding or deleting a cell without losing the tutor's notes under the other cells
+function renderNotebook({ keepNotes } = {}) {
+  const box = $("#cells"); box.textContent = "";
+  let exN = 0, codeN = 0;
+  const notesFor = (c) => (keepNotes && c.notes ? c.notes : el("div", { class: "notes" }));
+  if (S.cells.length && S.nb) box.append(adder(0));
+  S.cells.forEach((c, i) => {
+    if (c.hidden) return;
+    c.idx = i;
+    if (c.type === "markdown") {
+      c.notes = notesFor(c);
+      if (c.added && c.editing) {
+        const ed = el("div", {});
+        const done = () => { c.source = c.mdcm.getValue(); c.editing = false; c.mdcm = null; saveProgress(); renderNotebook({ keepNotes: true }); };
+        const wrap = el("div", { class: "mdedit" }, ed, el("div", { class: "row" },
+          el("button", { class: "btn primary", type: "button", text: "Done", onclick: done }),
+          el("span", { class: "muted", style: "align-self:center;font-size:.8rem", text: "Markdown and $maths$ work as in Jupyter. Shift+Enter also finishes." }),
+          el("span", { style: "flex:1" }),
+          actBtn("Delete cell", "trash", () => deleteCell(c), "plain")));
+        c.dom = el("div", { class: "cell mdcell added", "data-i": i }, el("div", { class: "gutter" }, delBtn(c)), wrap, c.notes);
+        box.append(c.dom, adder(i + 1));
+        c.mdcm = CodeMirror(ed, { value: c.source, mode: null, lineWrapping: true, viewportMargin: Infinity,
+          extraKeys: { "Shift-Enter": done, Esc: done } });
+        c.mdcm.on("change", () => { c.source = c.mdcm.getValue(); saveProgress(); });
+        return;
+      }
+      const md = el("div", { class: "md", html: mdToHtml(c.source, c.attachments) });
+      const btns = [];
+      if (hasSubstance(c.source)) btns.push(actBtn("Explain the text", "explain", () => enqueue(() => explainText(c)), "coach", "The tutor explains this text in plain words, under it"));
+      if (c.added) {
+        btns.push(actBtn("Edit", "edit", () => { c.editing = true; renderNotebook({ keepNotes: true }); focusCell(c); }, "plain", "Edit this text cell"));
+        md.ondblclick = () => { c.editing = true; renderNotebook({ keepNotes: true }); focusCell(c); };
+      }
+      const acts = btns.length ? el("div", { class: "mdacts" }, ...btns) : null;
+      c.dom = el("div", { class: "cell mdcell" + (c.added ? " added" : ""), "data-i": i }, el("div", { class: "gutter" }, delBtn(c)), md, acts, c.notes);
+      box.append(c.dom, adder(i + 1)); typeset(md); return;
+    }
+    codeN++; c.codeN = codeN;
+    const practiceEx = S.mode === "practice" && c.isEx;
+    if (practiceEx) c.exN = ++exN; else c.exN = null;
+    const runBtn = el("button", { class: "run", type: "button", title: "Run this cell (Shift+Enter)", "aria-label": "Run this cell", html: ICON_RUN, onclick: () => runCell(i) });
+    const counter = el("div", { text: c.count ? `[${c.count}]` : "[ ]" });
+    const tags = el("div", { class: "tags" });
+    const head = el("div", { class: "cellhead" }, tags);
+    const ed = el("div", { class: "editor" });
+    const outs = el("div", { class: "outputs" });
+    const box2 = el("div", { class: "codebox" }, head, ed, outs);
+    c.notes = notesFor(c);
+    c.dom = el("div", { class: "cell" + (practiceEx ? " exercise" : "") + (c.added ? " added" : "") + (i === S.active ? " active" : ""), "data-i": i }, el("div", { class: "gutter" }, runBtn, counter, delBtn(c)), box2, c.notes);
+    c.ui = { counter, tags, head, outs, ed };
+    box.append(c.dom, adder(i + 1));
+    const value = c.edit != null ? c.edit : c.source;
+    c.cm = CodeMirror(ed, {
+      value, mode: "python", lineNumbers: true, indentUnit: 4, matchBrackets: true, viewportMargin: Infinity, lineWrapping: false,
+      extraKeys: {
+        "Shift-Enter": () => { runCell(i, { advance: true }); },
+        "Ctrl-Enter": () => runCell(i), "Cmd-Enter": () => runCell(i),
+        Tab: (cm) => cm.somethingSelected() ? cm.indentSelection("add") : cm.replaceSelection("    "),
+      },
+    });
+    markBlanks(c);
+    c.cm.on("focus", () => setActive(i));
+    c.cm.on("change", () => {
+      if (c.added) { c.source = c.cm.getValue(); c.edit = null; saveProgress(); return; }   // the student's own cell: nothing to undo to
+      c.edit = c.cm.getValue(); saveProgress(); renderTags(c);
+    });
+    renderTags(c);
+    renderOutputs(c);
+  });
+  if (box.lastChild && box.lastChild.classList.contains("adder")) box.lastChild.classList.add("end");
+  renderProgress();
+}
+
+/* ============================================================ adding and deleting cells */
+function adder(at) {
+  return el("div", { class: "adder" },
+    actBtn("Code", "plus", () => addCell(at, "code"), "plain", "Add a code cell here"),
+    actBtn("Text", "plus", () => addCell(at, "markdown"), "plain", "Add a text cell here"));
+}
+let addSeq = 0;
+function addCell(at, type) {
+  const raw = type === "code"
+    ? { cell_type: "code", metadata: { tutor: { added: true } }, execution_count: null, outputs: [], source: [] }
+    : { cell_type: "markdown", metadata: { tutor: { added: true } }, source: [] };
+  const c = { id: "a" + Date.now().toString(36) + (addSeq++), raw, type, source: "", meta: raw.metadata, tm: raw.metadata.tutor,
+              tags: [], outputs: null, added: true, isEx: false, editing: type === "markdown" };
+  S.cells.splice(at, 0, c);
+  if (S.active >= at) S.active++;
+  renderNotebook({ keepNotes: true });
+  focusCell(c);
+  saveProgress();
+}
+function focusCell(c) {
+  requestAnimationFrame(() => {
+    if (c.mdcm) c.mdcm.focus(); else if (c.cm) { c.cm.focus(); setActive(c.idx); }
+    if (c.dom) c.dom.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+}
+function delBtn(c) {
+  return el("button", { class: "delcell", type: "button", title: "Delete this cell", "aria-label": "Delete this cell", html: ICONS.trash, onclick: () => askDelete(c) });
+}
+// Names a code cell defines (assignments, imports, functions, classes), to warn which later cells rely on it.
+function definedNames(src) {
+  const names = new Set();
+  for (const m of src.matchAll(/^[ \t]*([A-Za-z_]\w*(?:\s*,\s*[A-Za-z_]\w*)*)\s*(?:\+|-|\*|\/)?=(?!=)/gm)) m[1].split(/\s*,\s*/).forEach((n) => names.add(n));
+  for (const m of src.matchAll(/^[ \t]*(?:def|class)\s+([A-Za-z_]\w*)/gm)) names.add(m[1]);
+  for (const m of src.matchAll(/^[ \t]*import\s+([\w.]+)(?:\s+as\s+(\w+))?/gm)) names.add(m[2] || m[1].split(".")[0]);
+  for (const m of src.matchAll(/^[ \t]*from\s+[\w.]+\s+import\s+(.+)$/gm))
+    m[1].replace(/[()]/g, "").split(",").forEach((part) => { const q = part.trim().split(/\s+as\s+/); const n = (q[1] || q[0]).trim(); if (/^[A-Za-z_]\w*$/.test(n)) names.add(n); });
+  return names;
+}
+const codeOf = (c) => (c.cm ? c.cm.getValue() : c.edit != null ? c.edit : c.source) || "";
+function askDelete(c) {
+  if (c.added) { deleteCell(c); return; }              // the student's own cell: no questions asked, Undo is there
+  const facts = [];
+  facts.push(c.type === "code" ? "It is a <b>code</b> cell from the notebook your lecturer gave you." : "It is a <b>text</b> cell from the notebook your lecturer gave you.");
+  if (c.type === "code") {
+    const at = S.cells.indexOf(c), defs = [...definedNames(codeOf(c))];
+    const later = S.cells.slice(at + 1).filter((x) => x.type === "code" && !x.hidden).map(codeOf).join("\n");
+    const used = defs.filter((n) => new RegExp("\\b" + n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b").test(later)).slice(0, 8);
+    if (used.length) facts.push(`Later cells use what it defines: <code>${used.map(esc).join("</code>, <code>")}</code>. They will fail unless you define these somewhere else.`);
+  }
+  if (c.isEx) facts.push("It is an <b>exercise</b>: your answer in it, and its feedback, are deleted too.");
+  if (c.question) facts.push("Your lecturer attached a <b>question</b> to it; that goes too.");
+  if (c.predict) facts.push("You were going to <b>predict</b> its output; that goes too.");
+  if (c.notes && c.notes.childElementCount) facts.push("The tutor's notes under it are deleted too.");
+  $("#delBody").innerHTML = `<ul>${facts.map((f) => "<li>" + f + "</li>").join("")}</ul>` +
+    `<p class="muted">Only your copy of the notebook changes. <b>Undo</b> brings the cell back straight after deleting it. Later, adding the notebook again with <b>Replace it with this file</b> restores every lecturer cell, but replaces all your work in it.</p>`;
+  $("#delGo").onclick = () => { $("#delDlg").close(); deleteCell(c); };
+  $("#delDlg").showModal(); $("#delKeep").focus();
+}
+function deleteCell(c) {
+  const at = S.cells.indexOf(c); if (at < 0) return;
+  if (c.cm) c.source = c.cm.getValue(); else if (c.mdcm) c.source = c.mdcm.getValue();
+  S.cells.splice(at, 1);
+  if (S.active === at) S.active = -1; else if (S.active > at) S.active--;
+  c.editing = false; c.mdcm = null;
+  renderNotebook({ keepNotes: true });
+  saveProgress();
+  showNotice(`<b>Cell deleted.</b>`, [el("button", { class: "btn", type: "button", text: "Undo", onclick: () => {
+    S.cells.splice(Math.min(at, S.cells.length), 0, c); if (S.active >= at) S.active++;
+    renderNotebook({ keepNotes: true }); saveProgress(); showNotice(null); focusCell(c); } })]);
+}
+
+/* ============================================================ clearing the tutor's notes */
+function clearTutorNotes() {
+  S.gen++;
+  for (const ctl of S.live) { try { ctl.abort(); } catch {} }
+  S.live.clear();
+  if (S.exp) S.exp.cancel();
+  S.cells.forEach((c) => {
+    if (c.notes) c.notes.textContent = "";
+    c.predicted = false; c.askedLecturer = false; c.unveil = null;
+    if (c.veiled) { c.veiled = false; renderOutputs(c); }
+    renderTags(c);
+  });
+  S.chat = []; S.asked = []; S.askedTypes = { mcq: 0, short: 0, experiment: 0 }; S.sinceQuiz = 0;
+  S.score = { right: 0, total: 0 }; $("#score").textContent = "";
+  welcome();
+  showNotice("<b>The tutor's notes were cleared.</b> Run the cells again to work through the notebook from scratch.");
+}
+function markBlanks(c) {
+  const doc = c.cm.getDoc();
+  doc.getAllMarks().forEach((m) => m.className === "cm-blank" && m.clear());
+  doc.eachLine((lh) => {
+    const ln = doc.getLineNumber(lh), t = lh.text; const re = /_{3,}|\.\.\.(?=\s*(#|$))/g; let m;
+    while ((m = re.exec(t))) doc.markText({ line: ln, ch: m.index }, { line: ln, ch: m.index + m[0].length }, { className: "cm-blank" });
+  });
+}
+function renderTags(c) {
+  if (!c.ui) return;
+  const t = c.ui.tags; t.textContent = "";
+  const ex = S.mode === "practice" && c.isEx;
+  if (ex) { t.append(el("span", { class: "exlabel", text: "Exercise " + c.exN })); const st = exStatusTag(c); if (st) t.append(st); }
+  if (c.predict && S.mode === "guided" && S.settings.predict && !c.predicted)
+    t.append(el("span", { class: "note", title: "When you run this cell, its output stays hidden until you answer a quick prediction question.", html: ICONS.eye + "<span>You predict the output before you see it</span>" }));
+  const edited = c.edit != null && c.edit !== c.source;
+  if (edited && !ex) t.append(el("span", { class: "note", text: "You changed this code" }));
+  // actions
+  [...c.ui.head.querySelectorAll(".act")].forEach((b) => b.remove());
+  const acts = [];
+  if (edited && !ex) acts.push(actBtn("Undo my changes", "undo", () => { c.cm.setValue(c.source); c.edit = null; saveProgress(); markBlanks(c); }, "plain", "Put back the lecturer's original code"));
+  if (S.mode === "practice" && ex) {
+    acts.push(actBtn("Check my code", "check", () => checkCode(c), "coach", "The tutor reviews your Python and your data-science reasoning"));
+    acts.push(actBtn(hintLabel(c), "hint", () => tutorHint(c), "coach", "Hints go from a nudge to a worked solution"));
+  } else if (S.mode === "practice") {
+    acts.push(actBtn("Explain the code", "explain", () => enqueue(() => (c.result && c.result.error ? explainError(c) : explainCell(c))), "coach", "This cell sets things up for the exercises. The tutor explains it, under the cell"));
+  } else {
+    acts.push(actBtn("Explain the code", "explain", () => enqueue(() => explainCell(c)), "coach", "The tutor explains this cell's code, idea and output, under the cell"));
+    acts.push(actBtn("Quiz me", "quiz", () => enqueue(() => checkpoint(c, true)), "coach", "A quick question on this cell, under the cell"));
+    acts.push(actBtn("Try a change", "try", () => enqueue(() => experimentFor(c)), "coach", "The tutor suggests one change to make to the code, then asks what the new output tells you"));
+  }
+  c.ui.head.append(...acts);
+}
+const hintLabel = (c) => (c.hints || 0) >= 3 ? "Show hints" : `Hint ${(c.hints || 0) + 1} of 3`;
+function renderOutputs(c) {
+  const o = c.ui && c.ui.outs; if (!o) return;
+  o.textContent = "";
+  c.ui.counter.textContent = c.running ? "[*]" : c.count ? `[${c.count}]` : "[ ]";
+  c.dom.classList.toggle("running", !!c.running);
+  if (c.loading) o.append(el("div", { class: "loadmsg", text: c.loading }));
+  const r = c.result; if (!r) return;
+  if (c.veiled) {
+    o.append(el("div", { class: "veil" }, el("span", { html: "<b>Output hidden.</b> Answer the prediction question below this cell first." }),
+      el("button", { class: "btn", type: "button", text: "Show it anyway", onclick: () => { c.veiled = false; renderOutputs(c); c.unveil && c.unveil("skipped"); } })));
+    return;
+  }
+  if (r.notes && r.notes.length) o.append(el("div", { class: "out-note", text: (IS_LOCAL ? "Skipped: " : "Skipped here (shell or notebook commands): ") + r.notes.join("  ·  ") }));
+  if (r.stdout) o.append(el("pre", { class: "out-pre", text: r.stdout }));
+  if (r.stderr) o.append(el("pre", { class: "out-pre err", text: r.stderr }));
+  for (const x of r.results || []) {
+    if (x.kind === "html") o.append(el("div", { class: "out-html", html: DOMPurify.sanitize(x.html) }));
+    else if (x.kind === "markdown") { const d = el("div", { class: "md prose", html: mdToHtml(x.text) }); o.append(d); typeset(d); }
+    else o.append(el("pre", { class: "out-pre", text: x.text }));
+  }
+  (r.figures || []).forEach((b64, k) => o.append(el("img", { class: "out-img", alt: (r.figure_desc || [])[k] || "Plot", src: "data:image/png;base64," + b64 })));
+  if (r.error) {
+    // An error that is only its message (ai-learning-kit's DatasetUnavailable shows no traceback) is not shown twice.
+    const head = `${r.error.ename}: ${r.error.evalue}`, tb = String(r.error.traceback || "").trim();
+    o.append(el("div", { class: "out-error" }, el("div", { class: "ename", text: head }), ...(tb && tb !== head.trim() ? [el("pre", { text: r.error.traceback })] : [])));
+  }
+  // highlight error line
+  c.cm.getDoc().eachLine((lh) => c.cm.removeLineClass(lh, "background", "errline"));
+  if (r.error && r.error.line && r.src === c.cm.getValue()) c.cm.addLineClass(r.error.line - 1, "background", "errline");
+}
+function renderProgress() {
+  const code = S.cells.filter((c) => c.type === "code" && !c.hidden);
+  let done, total, label;
+  if (S.mode === "practice" && code.some((c) => c.isEx)) {
+    const ex = code.filter((c) => c.isEx); total = ex.length; done = ex.filter((c) => c.exStatus === "done" || c.exStatus === "helped").length;
+    label = `${done} of ${total} exercises complete`;
+  } else { total = code.length; done = code.filter((c) => c.count).length; label = `${done} of ${total} code cells run`; }
+  $("#progFill").style.width = total ? (100 * done / total) + "%" : "0";
+  $("#progText").textContent = label;
+}
+function setActive(i) {
+  if (S.active === i) return;
+  const prev = S.cells[S.active]; if (prev && prev.dom) prev.dom.classList.remove("active");
+  S.active = i; const c = S.cells[i]; if (c && c.dom) c.dom.classList.add("active");
+  updateAskCtx();
+}
+function updateAskCtx() {
+  const c = S.cells[S.active];
+  $("#askCtx").textContent = c && c.type === "code" ? `Asking about ${cellName(c)} and the notebook so far` : "Ask about the notebook";
+}
+const cellName = (c) => (S.mode === "practice" && c.isEx ? `Exercise ${c.exN}` : `cell ${c.codeN}`);
+function scrollToCell(c) { if (c && c.dom) c.dom.scrollIntoView({ behavior: "smooth", block: "center" }); }
+function showNotice(html, actions) {
+  const n = $("#notice"); n.innerHTML = ""; if (!html) { n.hidden = true; return; }
+  n.append(el("span", { html })); (actions || []).forEach((a) => n.append(a)); n.hidden = false;
+}
+
+/* ============================================================ running cells */
+async function runCell(i, opts = {}) {
+  const c = S.cells[i]; if (!c || c.type !== "code" || c.running) return;
+  // moving on releases any output still hidden behind a prediction question
+  for (const o of S.cells) if (o !== c && o.veiled) { o.veiled = false; renderOutputs(o); if (o.unveil) o.unveil("skipped"); }
+  setActive(i);
+  const code = c.cm.getValue();
+  // runs that belong to an open "Try it" (the observed cell, or a cell the student changed) go to that card
+  const inExperiment = !!(S.exp && !S.exp.restoring && S.exp.isRelated(c));
+  if (c.notes && !opts.silent && !inExperiment) c.notes.querySelectorAll(".card.auto, .inask").forEach((n) => n.remove());
+  c.running = true; c.loading = S.py ? null : "Waiting for Python to start…"; renderOutputs(c);
+  let r;
+  try {
+    await S.pyReady;
+    c.loading = null; renderOutputs(c);
+    r = await pyRun(code);
+  } catch (e) {
+    r = { error: { ename: "Error", evalue: String(e && e.message || e), traceback: "" }, results: [], figures: [] };
+  }
+  r.src = code;
+  c.running = false; c.result = r; c.count = r.count || c.count; c.runs = (c.runs || 0) + 1; c.ranCode = code; c.runSeq = ++S.runSeq;
+  if (S.mode === "practice" && c.isEx && c.exStatus !== "done" && c.exStatus !== "helped") c.exStatus = c.exStatus || "tried";
+  const wantPredict = !opts.silent && !inExperiment && S.mode === "guided" && S.settings.predict && c.predict && !c.predicted && !r.error && sampleUsable();
+  c.veiled = wantPredict;
+  if (wantPredict) c.predicted = true;
+  renderOutputs(c); renderProgress(); renderTags(c); saveProgress();
+  if (r.error && r.error.ename === "DatasetUnavailable") missingData(r.error.evalue);
+  if (opts.advance) focusNext(i);
+  if (inExperiment) { // the open "Try it" card responds instead of the usual notes, plus error help when the change broke something
+    S.exp.onRun(c);
+    if (r.error && !opts.silent) enqueue(() => explainError(c));
+    return r;
+  }
+  if (opts.silent) return r;
+  if (wantPredict) { enqueue(() => predictFlow(c)); return r; }
+  enqueue(() => afterRun(c));
+  return r;
+}
+function focusNext(i) {
+  for (let j = i + 1; j < S.cells.length; j++) { const n = S.cells[j]; if (n.type === "code" && !n.hidden) { setActive(j); scrollToCell(n); n.cm.focus(); return; } }
+}
+function nextUnrun() {
+  const start = Math.max(0, S.active);
+  for (let pass = 0; pass < 2; pass++) {
+    for (let j = pass ? 0 : start; j < S.cells.length; j++) { const c = S.cells[j]; if (c.type === "code" && !c.hidden && !c.count) return j; }
+  }
+  return -1;
+}
+async function runAbove() {
+  const upto = S.active >= 0 ? S.active : S.cells.length;
+  for (let j = 0; j < upto; j++) { const c = S.cells[j]; if (c.type === "code" && !c.hidden) { const r = await runCell(j, { silent: true }); if (r && r.error) { scrollToCell(c); break; } } }
+  setActive(upto < S.cells.length ? upto : S.active);
+}
+async function afterRun(c) {
+  const r = c.result;
+  if (S.mode === "practice") { // Practice: feedback on exercises; set-up cells run quietly unless they fail
+    if (c.isEx) { if (S.settings.review) await reviewExercise(c); }
+    else if (r.error) await explainError(c);
+    return;
+  }
+  if (r.error) { await explainError(c); return; }
+  if (S.settings.explain) await explainCell(c);
+  if (S.mode === "guided" && c.question && !c.askedLecturer) { c.askedLecturer = true; S.sinceQuiz = 0; askQuestion(c, c.question, "From your lecturer"); return; }
+  const every = +S.settings.quiz;
+  if (every > 0 && sampleUsable()) { S.sinceQuiz++; if (S.sinceQuiz >= every) { S.sinceQuiz = 0; await checkpoint(c, false); } }
+}
+
+/* ============================================================ tutor plumbing */
+let tq = Promise.resolve();
+function enqueue(fn) { const g = S.gen; const p = tq.then(() => (g === S.gen ? fn() : null)).catch((e) => console.error(e)); tq = p; return p; }
+function sampleUsable() { return !!S.sample && !S.sampleOff; }
+const TIER = () => S.settings.speed === "default" ? "default" : "quick";
+function sampleErrorCopy(e) {
+  const code = e && e.code;
+  if (code === "not_configured") { showSetupBanner(); return "The tutor isn't set up yet, so it can't answer."; }
+  const llm = IS_LOCAL ? "the language model" : "Gemini";
+  if (code === "bad_key") { const m = (e.message || "Your API key was rejected"); showSetupBanner(m + ". Set it again."); return m + "."; }
+  if (code === "forbidden") { showSetupBanner("The model provider refused the request: " + (e.message || "permission denied") + ". A university account may not be allowed to use this API; try a personal account or ask your lecturer."); return "The request was refused."; }
+  if (code === "model_not_found") return IS_LOCAL ? "The model in the settings is not available. Choose another one under Language model." : "The Gemini model in the settings is not available. Ask your lecturer which model to use, then change it in the VS Code settings.";
+  if (code === "offline") return `The tutor couldn't reach ${llm}. Check your internet connection (or that your local model server is running) and try again.`;
+  if (["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"].includes(code)) {
+    S.sampleOff = true; showBanner("The tutor needs permission to use Claude on your account. Python still runs without it.", true);
+    return "The tutor isn't allowed to answer in this view.";
+  }
+  if (code === "rate_limited") return "Too many tutor requests right now. Wait a minute, then try again.";
+  if (code === "session_expired") return "Your Claude session has expired. Sign in again, then try again.";
+  if (code === "refused") return "The tutor couldn't answer that. Try rephrasing the question.";
+  if (code === "invalid_json") return "The tutor's reply came back garbled. Try again.";
+  if (code === "truncated") return IS_LOCAL && e.message ? e.message : "The reply was cut off before the end. Try again.";
+  if (code === "prompt_too_large") return "This notebook context is too large to send. Restart Python to clear long outputs and try again.";
+  if (IS_LOCAL && e && e.message) return "The language model returned an error: " + e.message + " (check it under Tutor settings › Language model › Test the connection).";
+  return "The tutor couldn't be reached. Try again in a moment.";
+}
+// an error line for a tutor note; when the fix is to set up the tutor, the note carries the button itself
+function errNote(e) {
+  const n = el("div", { class: "out-note", text: sampleErrorCopy(e) });
+  if (HOST.setup && ["not_configured", "bad_key", "forbidden"].includes(e && e.code)) n.append(" ", el("button", { class: "btn primary", type: "button", text: "Set up the tutor", onclick: () => HOST.setup() }));
+  return n;
+}
+function showSetupBanner(text) {
+  const b = $("#tutorBanner"); b.textContent = text || "Set up the tutor to get explanations and feedback. Python works without it."; b.hidden = false;
+  if (HOST.setup) b.append(" ", el("button", { class: "btn primary", type: "button", text: "Set up the tutor", onclick: () => HOST.setup() }));
+  if (tutorShut()) $("#unread").hidden = false;
+  // the side panel may be a closed drawer, so say it at the top of the notebook too
+  if (HOST.setup) showNotice(`<b>The tutor isn't set up.</b> ${esc(text || "Python works, but explanations, questions and feedback need a connection to a language model.")}`, [el("button", { class: "btn primary", type: "button", text: "Set up the tutor", onclick: () => HOST.setup() })]);
+}
+async function showBanner(text, withManage) {
+  const b = $("#tutorBanner"); b.textContent = text; b.hidden = false;
+  if (withManage && window.claude) {
+    try { const p = await claude.use("permissions"); if (p && p.manage) b.append(" ", el("button", { class: "btn", text: "Permissions", onclick: () => p.manage().catch(() => {}) })); } catch {}
+  }
+}
+function noTutor(card) {
+  card.body.innerHTML = "";
+  card.body.append(el("div", { class: "prose", html: S.sample === undefined ? "<p>The tutor is still connecting. Try again in a few seconds.</p>" : "<p>The tutor isn't available in this view, so explanations and feedback are switched off. Python and your lecturer's own questions still work.</p>" }));
+}
+
+function feedAppend(node) {
+  const f = $("#feed"); const w = f.querySelector(".welcome"); if (w) w.remove();
+  f.append(node);
+  requestAnimationFrame(() => node.scrollIntoView({ behavior: "smooth", block: "nearest" }));
+  if (tutorShut()) $("#unread").hidden = false;
+}
+// Put a tutor card under its cell. Scroll to it only when that cell is the one the student is working on.
+function show(k) {
+  if (k.gen !== S.gen) return;               // made before "Clear notes": dropped
+  if (!k.inline) { feedAppend(k.node); return; }
+  k.c.notes.append(k.node);
+  if (S.cells[S.active] === k.c || k.c.type === "markdown") requestAnimationFrame(() => k.node.scrollIntoView({ behavior: "smooth", block: "nearest" }));
+}
+function card(kind, label, c, cls, { inline, auto } = {}) {
+  if (inline === undefined) inline = !!(c && c.notes);
+  const about = c && !inline && c.type === "code" ? el("button", { class: "about", text: cellName(c), onclick: () => { scrollToCell(c); if (isSheet()) openTutor(false); } }) : null;
+  const stop = el("button", { class: "btn ghost stop", type: "button", text: "Stop", hidden: true });
+  const body = el("div", { class: "cb" });
+  const tog = inline ? el("button", { class: "tog", type: "button", title: "Hide", "aria-label": "Hide this note", "aria-expanded": "true", html: ICONS.chev }) : null;
+  const node = el("div", { class: "card k-" + (cls || kind) + (auto ? " auto" : "") }, el("div", { class: "ch" }, el("span", { class: "kind", text: label }), about, stop, tog), body);
+  if (tog) tog.onclick = () => { const shut = node.classList.toggle("collapsed"); tog.setAttribute("aria-expanded", String(!shut)); tog.title = shut ? "Show" : "Hide"; tog.setAttribute("aria-label", shut ? "Show this note" : "Hide this note"); };
+  return { node, body, stop, c, inline, gen: S.gen };
+}
+function followUp(k) {
+  if (!k.inline || !sampleUsable()) return;
+  k.body.append(el("div", { class: "row" }, actBtn("Ask a follow-up", "ask", () => inlineAsk(k.c), "plain")));
+}
+function inlineAsk(c) {
+  let box = c.notes.querySelector(".inask");
+  if (!box) {
+    const ta = el("textarea", { rows: 1, id: "ia-" + c.id, "aria-label": "Your question", placeholder: c.type === "code" ? `Ask about ${cellName(c)}…` : "Ask about this text…" });
+    const go = () => { const q = ta.value.trim(); if (!q) { ta.focus(); return; } box.remove(); answerQuestion(q, c, true); };
+    ta.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); go(); } });
+    ta.addEventListener("input", () => autoGrow(ta));
+    box = el("div", { class: "inask" }, ta, el("button", { class: "btn primary", type: "button", text: "Ask", onclick: go }), el("button", { class: "btn ghost", type: "button", text: "Cancel", onclick: () => box.remove() }));
+    c.notes.append(box);
+  }
+  box.querySelector("textarea").focus();
+}
+function thinking(body, text) { body.innerHTML = ""; body.append(el("div", { class: "thinking", text: text || "Thinking…" })); }
+function setProse(body, text) {
+  let p = body.querySelector(".prose"); if (!p) { body.innerHTML = ""; p = el("div", { class: "prose" }); body.append(p); }
+  p.innerHTML = mdToHtml(text); return p;
+}
+async function stream(cardObj, prompt, opts = {}) {
+  const { body, stop } = cardObj;
+  if (!sampleUsable()) { noTutor(cardObj); return null; }
+  const ctl = new AbortController();
+  S.live.add(ctl);
+  stop.hidden = false; stop.onclick = () => ctl.abort();
+  thinking(body, opts.thinking);
+  let raf = 0, latest = "";
+  try {
+    const res = await S.sample(prompt, {
+      modelTier: opts.tier || TIER(), signal: ctl.signal, cache: opts.cache === undefined ? false : opts.cache,
+      onText: ({ text }) => { latest = text; if (!raf) raf = requestAnimationFrame(() => { raf = 0; setProse(body, latest); }); },
+    });
+    cancelAnimationFrame(raf);
+    const p = setProse(body, res.text); typeset(p);
+    if (res.truncated) body.append(el("div", { class: "out-note", text: "Cut short. Ask a narrower follow-up for the rest." }));
+    return res.text;
+  } catch (e) {
+    cancelAnimationFrame(raf);
+    if (e && e.code === "cancelled") { if (e.text) typeset(setProse(body, e.text)); else body.textContent = "Stopped."; return e.text || null; }
+    body.innerHTML = ""; if (e && e.text) typeset(setProse(body, e.text));
+    body.append(errNote(e));
+    return null;
+  } finally { stop.hidden = true; S.live.delete(ctl); }
+}
+async function askJSON(prompt, opts = {}) {
+  if (!sampleUsable()) throw { code: "not_granted" };
+  return S.sample.json(prompt, { modelTier: opts.tier || TIER(), cache: false, signal: opts.signal });
+}
+
+/* ============================================================ context for prompts */
+const LEVELS = {
+  ari1101: "First-year BSc students (study-unit ARI1101) who are still getting used to Python, NumPy, pandas, Matplotlib and scikit-learn. The models in scope are simple: linear regression and possibly logistic regression. Explain Python mechanics when they matter (method calls, df['col'] vs df[['col']], keyword arguments, what a function returns). Define any technical term the first time you use it, keep maths light and intuitive, and link every idea to the actual data. Aim for 90-160 words unless asked for more.",
+  ics2205: "Second- and third-year BSc students (study-unit ICS2205 Web Intelligence) who are comfortable with basic Python and pandas but new to text retrieval and graph analysis. Explain the method and its assumptions first and Python only where it is unusual (vectorisers, sparse matrices, networkx, embeddings). Use light notation when it clarifies a formula, and always say what a number means for the data. Aim for 110-190 words unless asked for more.",
+  ics5111: "Postgraduate students (study-unit ICS5111) who are fluent in Python. Focus on methodology, assumptions, evaluation design, statistical reasoning and pitfalls such as data leakage, overfitting, multiple testing and validation choices. Use precise terminology and maths where it helps. Aim for 120-220 words unless asked for more.",
+};
+function levelProfile() { return S.level === "custom" ? (S.note || "University students learning data science with Python. Pitch explanations at an undergraduate level.") : LEVELS[S.level]; }
+function basePrompt() {
+  return `You are the tutor built into "Notebook Tutor", a study tool where university students run and write Python data-science code in a notebook.
+COHORT: ${levelProfile()}
+MODE: ${S.mode === "guided"
+    ? "Guided walkthrough. The student runs a notebook prepared by the lecturer, before or after a class session, and should come away understanding both the code and the data-science ideas behind it."
+    : "Practice. The student writes the missing code in exercise cells. Your job is to help them learn to do it themselves: give feedback, nudges and explanations, and do not hand over complete solutions unless the hint ladder has reached level 3."}
+ENVIRONMENT: ${IS_LOCAL ? HOST.envLine() : `Python 3.12 runs in the browser (Pyodide) with numpy, pandas, matplotlib, seaborn, scipy and scikit-learn. Python has no internet access. ${IN_VSCODE ? "Files in the notebook's folder and its subfolders are available by their path relative to the notebook, e.g. pd.read_csv(\"data/houses.csv\"); files Python writes are not saved to disk." : "Data must be added with the \"Data files\" button and read by file name."} Shell commands (!pip) and magics (%) are skipped. input() does not work.`}${S.files.length ? " Data files available: " + S.files.slice(0, 40).join(", ") + "." : ""}
+WRITING RULES: Write in Markdown. Use the student's actual variable names and the numbers that appear in the output. Connect the Python mechanics to the data-science meaning. Be accurate and never invent output that is not shown; if something is not visible, say so. Use $...$ for maths. Address the student as "you". No greetings, no sign-offs, no headings larger than bold text.${kitRules()}`;
+}
+// Notebooks built with ai-learning-kit say which unit and session they belong to; the kit supplies the scope.
+function kitRules() {
+  if (!S.kit) return "";
+  const hasTasks = S.kit.tasks && Object.keys(S.kit.tasks).length > 0;
+  const tools = S.kit.tools ? `\nHELPERS: ${S.kit.tools.name} gives the session's helper functions (${S.kit.tools.summary || ""}). Functions: ${(S.kit.tools.functions || []).join(", ")}. Explain what a helper takes and returns, and why the step is needed; explain how it works inside only for steps the scope below puts in focus, and, when the student asks how a helper works, for steps it lists as available on request (kit.source(T.<name>) prints a helper's code).` : "";
+  const data = (S.kit.datasets || []).length ? `\nDATA: ${(S.kit.datasets || []).map((d) => `${d.title}, published by ${d.owner}`).join("; ")}. kit.start downloads it from the publisher the first time and checks it; if the download fails, the message printed by kit.start says what to do.` : "";
+  const grading = hasTasks
+    ? `kit.answer(...) checks the student's values and reasoning itself and records them in an answer book next to the notebook. Never contradict the kit's verdict, never state the values it checks or the wording of a model answer, and send the student to kit.task("T…") for the full task guidance.`
+    : `This session has no answer book: the notebook checks itself (prediction-then-check cells, and practice exercises compared with the helpers). Encourage the student to predict before running a check, and do not give the answer to a prediction or an exercise before the student has tried.`;
+  return `
+AI-LEARNING-KIT: This notebook belongs to ${S.kit.unit.code} ${S.kit.session} ("${S.kit.title}") and uses the ai-learning-kit library, imported as kit. ${grading}${tools}${data}
+${S.kit.scope}`;
+}
+function kitTasksFor(text) {
+  if (!S.kit || !S.kit.tasks) return "";
+  const ids = [...new Set(text.match(/\bT\d+\.\d+\b/g) || [])].filter((id) => S.kit.tasks[id]).slice(0, 2);
+  return ids.map((id) => `KIT TASK ${id}: ${S.kit.tasks[id].title}\nQuestion: ${S.kit.tasks[id].question}\nGuidance given to the student:\n${clip(S.kit.tasks[id].guide || "", 1500)}`).join("\n\n");
+}
+function outputText(r) {
+  if (!r) return "(this cell has not been run yet)";
+  const parts = [];
+  if (r.notes && r.notes.length) parts.push("Skipped commands: " + r.notes.join("; "));
+  if (r.stdout) parts.push("Printed output:\n" + clip(r.stdout, 2500));
+  for (const x of r.results || []) parts.push("Value shown:\n" + clip(x.text, 2500));
+  if (r.figure_desc && r.figure_desc.length) parts.push("Plots drawn: " + r.figure_desc.join(" | "));
+  if (r.stderr) parts.push("Warnings:\n" + clip(r.stderr, 800));
+  if (r.error) parts.push(`ERROR ${r.error.ename}: ${r.error.evalue}\n${clip(r.error.traceback, 1500)}`);
+  return parts.join("\n\n") || "(the cell ran and produced no output)";
+}
+function instructionsBefore(c) {
+  const out = [];
+  for (let j = c.idx - 1; j >= 0; j--) { const p = S.cells[j]; if (p.hidden) continue; if (p.type === "code") break; out.unshift(p.source); }
+  return clip(out.join("\n\n"), 1800) || "(none)";
+}
+function outline() {
+  const hs = [];
+  for (const c of S.cells) if (c.type === "markdown") for (const m of c.source.matchAll(/^#{1,3}\s+(.+)$/gm)) hs.push(m[1].replace(/[*_`]/g, ""));
+  return hs.slice(0, 30).join(" / ");
+}
+function recentCells(c, n = 2) {
+  const out = [];
+  for (let j = c.idx - 1; j >= 0 && out.length < n; j--) { const p = S.cells[j]; if (p.type === "code" && !p.hidden) out.unshift(`${cellName(p)}:\n${clip(p.cm.getValue(), 700)}`); }
+  return out.join("\n\n") || "(none)";
+}
+async function context(c, { solution = false } = {}) {
+  const code = c.cm.getValue();
+  const edited = c.source !== code && !(S.mode === "practice" && c.isEx);
+  return `NOTEBOOK: ${S.nb.title}
+OUTLINE: ${outline() || "(no headings)"}
+
+EARLIER CODE CELLS:
+${recentCells(c)}
+
+CURRENT: ${cellName(c)} (code cell ${c.codeN} of ${S.cells.filter((x) => x.type === "code" && !x.hidden).length})
+INSTRUCTIONS / TEXT BEFORE THIS CELL:
+${instructionsBefore(c)}
+
+CODE${S.mode === "practice" && c.isEx ? " (written by the student)" : ""}:
+\`\`\`python
+${clip(code, 4000)}
+\`\`\`
+${edited ? `The student edited the lecturer's original code, which was:\n\`\`\`python\n${clip(c.source, 2000)}\n\`\`\`\n` : ""}${c.result && c.ranCode && c.ranCode !== code ? "Note: the code was edited after it last ran; the output below belongs to the earlier version.\n" : ""}
+OUTPUT:
+${outputText(c.result)}
+${(() => { const t = kitTasksFor(code + "\n" + instructionsBefore(c)); return t ? "\n" + t + "\n" : ""; })()}
+VARIABLES IN MEMORY:
+${clip(await pyVars(), 2500)}${solution && c.solution ? `
+
+LECTURER'S REFERENCE SOLUTION (for your judgement only; never show, quote or paraphrase it line by line; other correct approaches are fine):
+\`\`\`python
+${clip(c.solution, 2000)}
+\`\`\`` : ""}`;
+}
+
+/* ============================================================ tutor actions */
+async function explainCell(c) {
+  const k = card("explain", "Explain", c, null, { auto: true }); show(k);
+  const prompt = `${basePrompt()}
+
+${await context(c)}
+
+TASK: Explain the cell the student just ran. Use three short parts with these bold labels:
+**What the code does** - walk through the important lines in order: the functions, methods and arguments, and what each returns.
+**The idea behind it** - the data-science concept and why this step matters in the overall workflow.
+**Reading the output** - interpret the actual numbers, table or plot, and point out anything worth noticing.
+If the student edited the lecturer's code, say what their change does compared with the original. Stay within the cohort's length guide.`;
+  if (await stream(k, prompt)) followUp(k);
+}
+async function explainError(c, forcePractice) {
+  if (c.result && c.result.error && /^(Kernel(Restart|Died)|DatasetUnavailable)$/.test(c.result.error.ename)) return;
+  const k = card("error", "Error help", c, null, { auto: true }); show(k);
+  const practice = forcePractice || (S.mode === "practice" && c.isEx);
+  const prompt = `${basePrompt()}
+
+${await context(c, { solution: practice })}
+
+TASK: The cell raised an error. Help the student understand it and fix it.
+Start with one plain sentence naming the problem. Then say which line triggered it and why Python complained, in words a ${S.level === "ics5111" ? "postgraduate" : "beginner"} understands. Then explain how to fix it.
+${practice ? "This is a practice exercise: point clearly at what to change, but do not write out the full corrected solution. Showing one corrected line is fine only when the error is a typo or a small syntax slip." : "Show the corrected line or lines in a python code block."}
+If the cause is that an earlier cell has not been run (for example a NameError for something defined above, or a module imported above), say so and tell them to use "Run all above".`;
+  if (await stream(k, prompt)) followUp(k);
+}
+async function checkpoint(c, onDemand) {
+  if (!sampleUsable()) {
+    if (onDemand) { const k = card("check", "Checkpoint", c); show(k); noTutor(k); }
+    return;
+  }
+  (c.failedChecks || []).forEach((n) => n.remove()); c.failedChecks = [];
+  const k = card("check", "Checkpoint", c); show(k);
+  thinking(k.body, "Writing a question…");
+  const mcqShare = S.level === "ics5111"
+    ? "Mix the types over the session: short answer about half the time, multiple choice otherwise, and a Try it experiment roughly one time in three when the recent code has something worth changing."
+    : "Mix the types over the session: mostly multiple choice, a short answer about one time in four, and a Try it experiment about one time in four when the recent code has a parameter or line worth changing.";
+  const tally = `Types asked so far: ${S.askedTypes.mcq} multiple choice, ${S.askedTypes.short} short answer, ${S.askedTypes.experiment} Try it.`;
+  const prompt = `${basePrompt()}
+
+${await context(c)}
+
+TASK: Write ONE checkpoint question that checks whether the student understood the recent cells. Test understanding of the concept or of what the code does, not trivia, memorised syntax or exact decimals. ${mcqShare}
+${tally}
+Questions already asked in this session (do not repeat them): ${S.asked.slice(-8).join(" | ") || "none"}.
+Reply with only JSON, in one of these three shapes:
+{"type":"mcq","question":"...","options":["...","...","...","..."],"answer":2,"explanation":"why the right answer is right and why the most tempting wrong option is wrong"}
+{"type":"short","question":"...","answer_guide":"the key points a good answer contains"}
+${EXP_SHAPE}
+For multiple choice: exactly 4 options, one correct, distractors that reflect real misconceptions, and vary which position is correct.
+${EXP_RULES(c)}`;
+  let q;
+  try { q = await askJSON(prompt); } catch (e) {
+    k.body.innerHTML = ""; k.body.append(errNote(e));
+    if (e && e.code !== "cancelled") {
+      (c.failedChecks = c.failedChecks || []).push(k.node);
+      k.body.append(el("div", { class: "row" }, actBtn("Try again", "ask", () => enqueue(() => checkpoint(c, true)), "plain")));
+    }
+    return;
+  }
+  k.node.remove();
+  askQuestion(c, q, "Checkpoint"); // answered whenever the student is ready; the tutor carries on
+}
+function validQ(q) {
+  if (!q || typeof q.question !== "string") return false;
+  if (q.type === "short") return true;
+  if (q.type === "experiment") return typeof q.task === "string" && q.task.trim().length > 0;
+  return Array.isArray(q.options) && q.options.length >= 2 && Number.isInteger(+q.answer) && +q.answer >= 0 && +q.answer < q.options.length;
+}
+function bump(right) { S.score.total++; if (right) S.score.right++; $("#score").textContent = `· ${S.score.right} of ${S.score.total} questions right`; }
+function askQuestion(c, q, label, kind = "check") {
+  if (q && q.type === "experiment" && validQ(q)) return tryIt(c, q, label === "From your lecturer" ? "Try it · from your lecturer" : "Try it");
+  if (q && S.askedTypes[q.type] !== undefined) S.askedTypes[q.type]++;
+  return new Promise((resolve) => {
+    const k = card(kind, label, c);
+    if (!validQ(q)) { k.body.append(el("div", { class: "out-note", text: "That question came out malformed, so it was skipped." })); show(k); resolve(null); return; }
+    S.asked.push(q.question);
+    k.body.append(el("div", { class: "q prose", html: mdToHtml(q.question) }));
+    show(k); typeset(k.body);
+    if (q.type === "short") {
+      const ta = el("textarea", { class: "ans", placeholder: "Type your answer in your own words…", id: "ans-" + Math.random().toString(36).slice(2) });
+      const send = el("button", { class: "btn primary", text: "Check my answer" });
+      const skip = el("button", { class: "btn ghost", text: "Show the answer" });
+      const fb = el("div");
+      k.body.append(ta, el("div", { class: "row" }, send, skip), fb);
+      const finish = (v) => { send.disabled = skip.disabled = ta.disabled = true; resolve(v); };
+      skip.onclick = () => { fb.innerHTML = ""; fb.append(el("div", { class: "verdict empty", text: "Answer" }), el("div", { class: "prose", html: mdToHtml(q.answer_guide || "") })); typeset(fb); finish("skipped"); };
+      send.onclick = async () => {
+        const a = ta.value.trim(); if (!a) { ta.focus(); return; }
+        send.disabled = true; thinking(fb, "Reading your answer…");
+        if (!sampleUsable()) { skip.onclick(); return; }
+        try {
+          const g = await askJSON(`${basePrompt()}
+
+TASK: Grade the student's answer to a checkpoint question. Be fair and encouraging: accept answers that capture the key idea in their own words, and ignore spelling and grammar. Reply with only JSON: {"verdict":"correct"|"partly"|"incorrect","feedback":"2-4 sentences: what they got right, what is missing or wrong, and the key idea stated clearly"}
+
+QUESTION: ${q.question}
+ANSWER GUIDE: ${q.answer_guide || "(none; judge from the notebook context)"}
+NOTEBOOK CONTEXT (cell the question is about):
+${clip(c.cm.getValue(), 1500)}
+OUTPUT: ${clip(outputText(c.result), 1200)}
+
+STUDENT ANSWER: ${a}`);
+          const v = ["correct", "partly", "incorrect"].includes(g.verdict) ? g.verdict : "partly";
+          fb.innerHTML = "";
+          fb.append(el("div", { class: "verdict " + v, text: v === "correct" ? "Correct" : v === "partly" ? "Partly right" : "Not quite" }), el("div", { class: "prose", html: mdToHtml(g.feedback || "") }));
+          typeset(fb); bump(v === "correct"); finish(v);
+        } catch (e) { fb.innerHTML = ""; fb.append(errNote(e)); send.disabled = false; }
+      };
+      return;
+    }
+    const opts = el("div", { class: "opts" });
+    const fb = el("div");
+    const ans = +q.answer;
+    const buttons = q.options.map((o, i) => el("button", { class: "opt", onclick: () => pick(i) }, el("span", { class: "l", text: "ABCDEF"[i] }), el("span", { class: "prose", html: mdToHtml(String(o)) })));
+    opts.append(...buttons); k.body.append(opts, fb); typeset(opts);
+    function pick(i) {
+      buttons.forEach((b, j) => { b.disabled = true; if (j === ans) b.classList.add("right"); else if (j === i) b.classList.add("wrong"); });
+      const right = i === ans;
+      fb.append(el("div", { class: "verdict " + (right ? "correct" : "incorrect"), text: right ? "Correct" : `Not quite. The answer is ${"ABCDEF"[ans]}.` }), el("div", { class: "prose", html: mdToHtml(q.explanation || "") }));
+      if (sampleUsable()) fb.append(el("div", { class: "row" }, actBtn("Ask a follow-up", "ask", () => inlineAsk(c), "plain")));
+      typeset(fb); bump(right); resolve(right ? "correct" : "incorrect");
+    }
+  });
+}
+async function predictFlow(c) {
+  if (!c.veiled) return afterRun(c); // the student already moved on
+  const k = card("predict", "Predict", c); show(k);
+  thinking(k.body, "Preparing a prediction question…");
+  let q;
+  try {
+    q = await askJSON(`${basePrompt()}
+
+${await context(c)}
+
+TASK: The student has NOT seen this cell's output yet; you can see it above. Ask them to PREDICT something meaningful about it before they look: the shape or type of what is returned, the direction or rough size of an effect, what the plot will show, or how a value compares with another. Do not ask for exact decimals. Reply with only JSON:
+{"type":"mcq","question":"Before you look: ...","options":["...","...","...","..."],"answer":1,"explanation":"what the output actually shows and why, referring to the real output"}
+Exactly 4 options, one correct, plausible distractors based on common misconceptions.`);
+  } catch (e) { k.body.innerHTML = ""; k.body.append(errNote(e)); q = null; }
+  if (q) k.node.remove();
+  if (!q || !c.veiled) { if (c.veiled) { c.veiled = false; renderOutputs(c); } return afterRun(c); }
+  const unveiled = new Promise((res) => { c.unveil = res; });
+  const answered = askQuestion(c, q, "Predict before you look", "predict");
+  // the explanation follows once the output is revealed; the tutor queue is not held up meanwhile
+  Promise.race([answered, unveiled]).then((how) => {
+    c.unveil = null;
+    if (c.veiled) { c.veiled = false; renderOutputs(c); if (how !== "skipped") scrollToCell(c); }
+    enqueue(() => afterRun(c));
+  });
+}
+async function checkCode(c) {
+  if (c.isEx) return enqueue(() => reviewExercise(c, true));
+  return enqueue(() => (c.result && c.result.error ? explainError(c, true) : explainCell(c)));
+}
+async function reviewExercise(c, manual) {
+  const k = card("review", "Code review", c, null, { auto: true }); show(k);
+  if (!sampleUsable()) { noTutor(k); return; }
+  thinking(k.body, "Reading your code…");
+  const prompt = `${basePrompt()}
+
+${await context(c, { solution: true })}
+
+TASK: Review the student's attempt at this exercise.${!c.result ? " They have not run it yet, so judge the code itself." : ""} Judge it against the exercise instructions (the text before the cell and any comments in the starter code). Check two things:
+(a) Python: does it run, does it do what the task asks, is it clear?
+(b) Data science: is the method sound? For example fitting only on training data, evaluating on the test set, using the right metric and units, a 2-D feature matrix for scikit-learn, labelled plots, a correct interpretation, no data leakage, a random_state when asked.
+Do NOT write the full solution. You may name functions or show one short line pattern.
+Hints already given for this exercise: ${c.hints || 0} of 3.
+Reply with only JSON:
+{"status":"correct"|"partial"|"incorrect"|"error"|"empty","headline":"one short sentence verdict","python":"feedback on the code (Markdown, 1-3 sentences)","concept":"feedback on the data-science reasoning (Markdown, 1-3 sentences)","next":"the single next thing to try; if correct, a short stretch question or idea"}
+"partial" means it runs and is mostly right but misses part of the task or has a methodological flaw. "error" means it raised an error. "empty" means there is no real attempt yet (only placeholders).`;
+  let rv;
+  try { rv = await askJSON(prompt); } catch (e) { k.body.innerHTML = ""; k.body.append(errNote(e)); return; }
+  const st = ["correct", "partial", "incorrect", "error", "empty"].includes(rv.status) ? rv.status : "partial";
+  const label = { correct: "Correct", partial: "Almost there", incorrect: "Not yet", error: "Error to fix", empty: "Nothing to check yet" }[st];
+  k.body.innerHTML = "";
+  const box = el("div", { class: "rv prose" });
+  box.append(el("div", { class: "verdict " + st, text: label }));
+  box.insertAdjacentHTML("beforeend", mdToHtml(rv.headline || ""));
+  if (rv.python) { box.append(el("h4", { text: "Your Python" })); box.insertAdjacentHTML("beforeend", mdToHtml(rv.python)); }
+  if (rv.concept) { box.append(el("h4", { text: "The data science" })); box.insertAdjacentHTML("beforeend", mdToHtml(rv.concept)); }
+  if (rv.next) { box.append(el("h4", { text: st === "correct" ? "Going further" : "Next step" })); box.insertAdjacentHTML("beforeend", mdToHtml(rv.next)); }
+  k.body.append(box);
+  const row = el("div", { class: "row" });
+  if (st !== "correct" && (c.hints || 0) < 3) { const hb = actBtn(hintLabel(c), "hint", () => { hb.remove(); tutorHint(c); }); row.append(hb); }
+  if (st === "correct" && sampleUsable()) row.append(actBtn("Try an experiment", "try", () => enqueue(() => experimentFor(c))));
+  if (sampleUsable()) row.append(actBtn("Ask a follow-up", "ask", () => inlineAsk(c), "plain"));
+  k.body.append(row); typeset(k.body);
+  if (st === "correct") c.exStatus = c.exStatus === "helped" ? "helped" : "done";
+  else if (c.exStatus !== "done" && c.exStatus !== "helped") c.exStatus = st === "empty" ? "tried" : st;
+  renderTags(c); renderProgress(); saveProgress();
+  if (st === "correct" && !manual && S.settings.quizPractice) { S.sinceQuiz++; if (S.sinceQuiz >= 2) { S.sinceQuiz = 0; await checkpoint(c, false); } }
+}
+function tutorHint(c) {
+  return enqueue(async () => {
+    const level = Math.min(3, (c.hints || 0) + 1);
+    const k = card("hint", `Hint ${level} of 3`, c); show(k);
+    if (!sampleUsable()) {
+      if (level === 3 && c.solution) { k.body.append(el("div", { class: "prose", html: mdToHtml("A worked solution from your lecturer:\n```python\n" + c.solution + "\n```") })); c.hints = 3; finishHint(c); }
+      else noTutor(k);
+      return;
+    }
+    const prompt = `${basePrompt()}
+
+${await context(c, { solution: true })}
+
+TASK: Give hint level ${level} of 3 for this exercise.
+Level 1: point to the idea and the kind of tool needed (the concept, and which library or method family), with no code.
+Level 2: be specific: name the exact functions or methods and their key arguments, and give a code skeleton with ___ blanks for the parts the student must fill in.
+Level 3: give a complete worked solution in a python code block, then explain each line briefly so the student learns from it${c.solution ? " (you may base it on the reference solution)" : ""}.
+Build on what the student has written so far rather than starting over, unless their approach cannot work; if so, say why. Earlier hints already given: ${c.hintTexts && c.hintTexts.length ? c.hintTexts.map((t, i) => `[${i + 1}] ${clip(t, 400)}`).join(" ") : "none"}.
+Keep levels 1 and 2 short (2-5 sentences plus any skeleton).`;
+    const text = await stream(k, prompt);
+    if (text) { c.hints = level; (c.hintTexts = c.hintTexts || []).push(text); finishHint(c); followUp(k); }
+  });
+}
+function finishHint(c) {
+  if (c.hints >= 3 && c.exStatus !== "done") c.exStatus = "helped";
+  renderTags(c); renderProgress(); saveProgress();
+}
+function nextCode(c) {
+  for (let j = c.idx + 1; j < S.cells.length; j++) { const n = S.cells[j]; if (n.type === "code" && !n.hidden) return clip(n.cm ? n.cm.getValue() : n.source, 1200); }
+  return "(none)";
+}
+async function textContext(c) {
+  return `NOTEBOOK: ${S.nb.title}
+OUTLINE: ${outline() || "(no headings)"}
+
+TEXT CELL THE STUDENT IS READING:
+${clip(c.source, 3500)}
+
+THE CODE CELL THAT FOLLOWS IT:
+\`\`\`python
+${nextCode(c)}
+\`\`\`
+${S.py ? "\nVARIABLES IN MEMORY:\n" + clip(await pyVars(), 1500) : ""}`;
+}
+async function explainText(c) {
+  const k = card("explain", "Explain", c, null, { auto: true }); show(k);
+  const prompt = `${basePrompt()}
+
+${await textContext(c)}
+
+TASK: The student asked you to explain this text cell. Explain its main idea in plain words, at the cohort's level. If it contains a formula, say what each symbol stands for and what the formula does, in words. Give one small, concrete example, using this notebook's data where you can. End with one sentence on how this connects to the code that follows. Stay within the cohort's length guide.`;
+  if (await stream(k, prompt)) followUp(k);
+}
+async function answerQuestion(qtext, c, inline) {
+  const you = el("div", { class: "you", text: qtext });
+  const k = card("answer", "Answer", c, null, { inline });
+  if (inline) { c.notes.append(you); show(k); } else { feedAppend(you); feedAppend(k.node); }
+  if (!sampleUsable()) { noTutor(k); return; }
+  const ctx = !c ? `NOTEBOOK: ${S.nb.title}\nOUTLINE: ${outline()}` : c.type === "markdown" ? await textContext(c) : await context(c, { solution: S.mode === "practice" && c.isEx });
+  const rules = `${basePrompt()}
+
+${ctx}
+
+TASK: The student is asking questions about this notebook${c && inline ? (c.type === "markdown" ? ", about the text cell above" : `, about ${cellName(c)}`) : ""}. Answer the latest question directly and correctly, at the cohort's level, using their data and variables where relevant. If they ask for something beyond the notebook, answer briefly and link it back.${S.mode === "practice" && c && c.isEx ? " They are in the middle of an exercise: explain and guide, but do not write the complete exercise solution for them; suggest the Hint button if they want more." : ""}`;
+  const turns = [{ role: "user", content: rules }, ...S.chat.slice(-8), { role: "user", content: qtext }];
+  const ans = await stream(k, turns);
+  S.chat.push({ role: "user", content: qtext });
+  if (ans) { S.chat.push({ role: "assistant", content: ans }); followUp(k); }
+}
+async function askTutor() {
+  const t = $("#ask"); const qtext = t.value.trim(); if (!qtext) return;
+  t.value = ""; autoGrow(t);
+  const c = S.cells[S.active] && S.cells[S.active].type === "code" ? S.cells[S.active] : S.cells.filter((x) => x.type === "code" && !x.hidden && x.result).pop();
+  answerQuestion(qtext, c, false);
+}
+
+
+/* ============================================================ "Try it" experiments */
+const EXP_SHAPE = `{"type":"experiment","task":"one sentence: the single change to make and why it is interesting","steps":["Exact edit to make, naming the cell and the line","Which cell(s) to run, in order","What to look at in the new output"],"question":"one question asking the student to interpret the new output","answer_guide":"what should happen, as concretely as the code and current output allow, and the data-science idea behind it","hint":"a nudge about where and how to make the change"}`;
+const EXP_RULES = (c) => `Rules for a Try it experiment: exactly one change; the student makes it in ${cellName(c)} or in an earlier code cell (name the cell exactly as it is named in this context); its effect must show in ${cellName(c)}'s output after re-running; it must run in a second or two in the browser, use only libraries already imported, and never read files or the internet. Good changes for this cohort: a parameter (test_size, random_state, the noise level, the number of samples, a threshold), a different feature, metric or plot, or removing one line. Steps are short and in order, 2 to 4 of them; if the change is in an earlier cell, a step must tell the student to re-run that cell first.`;
+async function experimentFor(c) {
+  const k = card("try", "Try it", c); show(k);
+  if (!sampleUsable()) { noTutor(k); return; }
+  thinking(k.body, "Designing an experiment…");
+  let q;
+  try {
+    q = await askJSON(`${basePrompt()}
+
+${await context(c, { solution: S.mode === "practice" && c.isEx })}
+
+TASK: Design ONE short, guided Try it experiment on ${cellName(c)}: the student changes one thing in the code, runs it again, and interprets what changed in the output, linking it to a data-science idea.${S.mode === "practice" ? " The student has just solved this exercise correctly, so make it a stretch that deepens the idea rather than a repeat." : ""}
+Do not repeat these earlier questions: ${S.asked.slice(-8).join(" | ") || "none"}.
+${EXP_RULES(c)}
+Reply with only JSON in this shape:
+${EXP_SHAPE}`);
+  } catch (e) { k.body.innerHTML = ""; k.body.append(errNote(e)); return; }
+  k.node.remove();
+  if (!q || q.type !== "experiment" || !validQ(q)) { const bad = card("try", "Try it", c); bad.body.append(el("div", { class: "out-note", text: "That experiment came out malformed. Try again." })); show(bad); return; }
+  tryIt(c, q, "Try it");
+}
+const mdInline = (x) => (window.marked && marked.parseInline ? DOMPurify.sanitize(marked.parseInline(String(x))) : esc(x));
+function lineDiff(a, b) {
+  const A = a.replace(/\s+$/, "").split("\n"), B = b.replace(/\s+$/, "").split("\n");
+  let i = 0; while (i < A.length && i < B.length && A[i] === B[i]) i++;
+  let j = 0; while (j < A.length - i && j < B.length - i && A[A.length - 1 - j] === B[B.length - 1 - j]) j++;
+  return { line: i + 1, removed: A.slice(i, A.length - j), added: B.slice(i, B.length - j) };
+}
+const diffText = (d) => [...d.removed.map((l) => "- " + l), ...d.added.map((l) => "+ " + l)].join("\n");
+const codeCells = () => S.cells.filter((x) => x.type === "code" && !x.hidden && x.cm);
+const listNames = (cs) => cs.map(cellName).join(" and ");
+// One experiment is open at a time. It watches the student's runs: it opens the answer box only once
+// the code has changed, every changed cell has been re-run, and the observed cell has run after them.
+function tryIt(c, q, label) {
+  return new Promise((resolve) => {
+    if (S.exp) S.exp.cancel();
+    S.asked.push(q.task + " " + q.question); S.askedTypes.experiment++;
+    const k = card("try", label, c);
+    const baseline = new Map(codeCells().map((x) => [x, { code: x.cm.getValue(), out: outputText(x.result) }]));
+    const steps = Array.isArray(q.steps) ? q.steps.filter((x) => typeof x === "string" && x.trim()) : [];
+    k.body.append(el("div", { class: "q prose", html: mdToHtml(q.task) }));
+    if (steps.length) k.body.append(el("ol", { class: "steps" }, ...steps.map((x) => el("li", { html: mdInline(x) }))));
+    k.body.append(el("div", { class: "prose then", html: mdToHtml("**Then answer:** " + q.question) }));
+    const status = el("div", { class: "trystatus wait", text: `Waiting for you to make the change and run ${cellName(c)}.` });
+    const diffBox = el("div");
+    const answerBox = el("div");
+    const hintBox = el("div", { class: "prose" });
+    const fb = el("div");
+    const ctrls = el("div", { class: "row" });
+    const restoreBtn = actBtn("Put the original code back", "restore", () => restore(), "plain", "Restore the code as it was and re-run the affected cells");
+    restoreBtn.hidden = true;
+    let hintBtn = null;
+    if (q.hint) hintBtn = actBtn("Hint", "hint", () => { hintBox.innerHTML = mdToHtml("**Hint:** " + q.hint); typeset(hintBox); hintBtn.remove(); });
+    const skipBtn = actBtn("Show the answer", null, () => finish("skipped"), "plain");
+    ctrls.append(...[hintBtn, restoreBtn, skipBtn].filter(Boolean));
+    k.body.append(status, diffBox, hintBox, answerBox, fb, ctrls);
+    show(k); typeset(k.body);
+    let done = false, ta = null, send = null, keepNote = null;
+    const changed = () => codeCells().filter((x) => baseline.has(x) && x.cm.getValue().replace(/\s+$/, "") !== baseline.get(x).code.replace(/\s+$/, ""));
+    const setStatus = (kind, html) => { status.className = "trystatus " + kind; status.innerHTML = html; };
+    const exp = { c, restoring: false, onRun, cancel: () => finish("replaced"), isRelated: (x) => x === c || changed().includes(x) };
+    S.exp = exp;
+    function onRun(ran) {
+      if (done) return;
+      const ch = changed();
+      restoreBtn.hidden = !ch.length;
+      if (!ch.length) { if (ran === c) setStatus("warn", "The code is the same as before. Make the change first, then run the cell again."); return; }
+      const stale = ch.filter((x) => x.ranCode !== x.cm.getValue());
+      if (stale.length) { setStatus("warn", `You changed ${esc(listNames(stale))} but haven't run ${stale.length > 1 ? "them" : "it"} since. Run ${stale.length > 1 ? "them" : "it"}, then run ${esc(cellName(c))}.`); return; }
+      const broken = [...new Set([...ch, c])].filter((x) => x.result && x.result.error);
+      if (broken.length) { const x = broken[0]; setStatus("bad", `Your change raised <b>${esc(x.result.error.ename)}</b> in ${esc(cellName(x))}: ${esc(x.result.error.evalue)}. Fix it, or put the original code back.`); return; }
+      const latest = Math.max(...ch.map((x) => x.runSeq || 0));
+      if ((c.runSeq || 0) < latest) { setStatus("warn", `Now run ${esc(cellName(c))} to see the effect of your change.`); return; }
+      setStatus("ok", "Change made and run. Look at the new output, then answer below.");
+      diffBox.innerHTML = "";
+      diffBox.append(el("div", { class: "rv" }, el("h4", { text: "What you changed" }), ...ch.map((x) => { const d = lineDiff(baseline.get(x).code, x.cm.getValue()); return el("div", {}, el("div", { class: "out-note", text: `${cellName(x)}, line ${d.line}` }), el("pre", { class: "diff", text: diffText(d) })); })));
+      if (!ta) {
+        ta = el("textarea", { class: "ans", id: "try-" + c.id + "-" + S.runSeq, placeholder: "What changed in the output, and why?" });
+        send = el("button", { class: "btn primary", type: "button", text: "Check my answer", onclick: grade });
+        answerBox.append(ta, el("div", { class: "row" }, send));
+        if (S.cells[S.active] === c) requestAnimationFrame(() => ta.scrollIntoView({ behavior: "smooth", block: "nearest" }));
+      }
+    }
+    async function grade() {
+      const a = ta.value.trim(); if (!a) { ta.focus(); return; }
+      if (!sampleUsable()) { finish("skipped"); return; }
+      send.disabled = true; thinking(fb, "Reading your answer…");
+      const ch = changed();
+      const cellsSeen = [...new Set([...ch, c])].sort((x, y) => x.idx - y.idx);
+      try {
+        const g = await askJSON(`${basePrompt()}
+
+TASK: Grade a Try it experiment. The student was asked to change some code, run it again and interpret the result. Be fair and encouraging, accept answers in their own words, and ignore spelling. If they made a different change from the one asked, say so briefly and judge their reading of what they actually did. Use the real numbers from the outputs. Reply with only JSON:
+{"change":"as_asked"|"different"|"partial","verdict":"correct"|"partly"|"incorrect","feedback":"3-5 sentences: whether the change was the one asked, whether their reading of the new output is right, and the key idea stated clearly"}
+
+EXPERIMENT: ${q.task}
+STEPS: ${steps.join(" / ") || "(none)"}
+QUESTION: ${q.question}
+ANSWER GUIDE: ${q.answer_guide || "(none; judge from the outputs)"}
+
+WHAT THEY CHANGED:
+${ch.map((x) => `${cellName(x)}:\n${diffText(lineDiff(baseline.get(x).code, x.cm.getValue()))}`).join("\n\n")}
+
+OUTPUT BEFORE THE CHANGE:
+${cellsSeen.map((x) => `${cellName(x)}:\n${clip(baseline.get(x).out, 1500)}`).join("\n\n")}
+
+OUTPUT AFTER THE CHANGE:
+${cellsSeen.map((x) => `${cellName(x)}:\n${clip(outputText(x.result), 1500)}`).join("\n\n")}
+
+STUDENT'S INTERPRETATION: ${a}`);
+        const v = ["correct", "partly", "incorrect"].includes(g.verdict) ? g.verdict : "partly";
+        fb.innerHTML = "";
+        fb.append(el("div", { class: "verdict " + v, text: v === "correct" ? "Correct" : v === "partly" ? "Partly right" : "Not quite" }), el("div", { class: "prose", html: mdToHtml(g.feedback || "") }));
+        typeset(fb); bump(v === "correct"); finish(v, true);
+      } catch (e) { fb.innerHTML = ""; fb.append(errNote(e)); send.disabled = false; }
+    }
+    async function restore() {
+      const ch = changed(); if (!ch.length) return;
+      restoreBtn.disabled = true; exp.restoring = true;
+      const prev = status.innerHTML, prevCls = status.className;
+      setStatus("wait", "Putting the original code back and re-running…");
+      for (const x of ch) { x.cm.setValue(baseline.get(x).code); markBlanks(x); }
+      const from = Math.min(...ch.map((x) => x.idx)), to = Math.max(c.idx, ...ch.map((x) => x.idx));
+      for (const x of codeCells()) if (x.idx >= from && x.idx <= to && x.count) await runCell(x.idx, { silent: true });
+      exp.restoring = false; restoreBtn.disabled = false; restoreBtn.hidden = true;
+      if (done) { setStatus("ok", "The original code is back and has been re-run, so later cells match the notebook again."); restoreBtn.remove(); if (keepNote) keepNote.remove(); }
+      else { status.className = prevCls; status.innerHTML = prev; setStatus("wait", `Original code restored. Make the change again and run ${esc(cellName(c))} when you're ready.`); diffBox.innerHTML = ""; }
+    }
+    function finish(how, graded) {
+      if (done) return; done = true;
+      if (S.exp === exp) S.exp = null;
+      if (send) send.disabled = true; if (ta) ta.disabled = true;
+      [hintBtn, skipBtn].forEach((b) => b && b.remove());
+      if (how === "replaced") { setStatus("wait", "Closed: a newer experiment replaced this one."); }
+      else if (!graded) { setStatus("wait", "Answer shown."); fb.innerHTML = ""; fb.append(el("div", { class: "verdict empty", text: "What should happen" }), el("div", { class: "prose", html: mdToHtml(q.answer_guide || "") })); typeset(fb); }
+      if (changed().length && how !== "replaced") {
+        restoreBtn.hidden = false;
+        keepNote = el("span", { class: "out-note", text: "Keep your version to explore further; later cells will then use your changed code." });
+        ctrls.append(keepNote);
+      }
+      resolve(how);
+    }
+  });
+}
+
+/* ============================================================ notebook lifecycle */
+function welcome() {
+  const f = $("#feed"); f.textContent = "";
+  const g = S.mode === "guided";
+  f.append(el("div", { class: "welcome" },
+    el("h3", { text: "Ask me anything about this notebook" }),
+    el("p", { text: "Explanations, questions and feedback on your code appear right under the cell they belong to. Use this panel for questions that are not about one cell." }),
+    el("ul", {}, ...(g
+      ? ["Press the <b>run button</b> beside a cell, or Shift+Enter inside it. The output appears under the cell.", "After each cell an explanation appears under it. Every few cells you get a quick question.", "<b>Explain the code</b>, <b>Quiz me</b> and <b>Try a change</b> work on any cell, any time. Text cells have <b>Explain the text</b>."]
+      : ["Cells headed <b>Exercise</b> are yours. Write your code, then run it. The other cells set things up and run without comments.", "Feedback on your Python and your data-science reasoning appears under the cell.", "Stuck? Hints go from a gentle nudge to a full worked solution.", IS_LOCAL ? "Your code, outputs and progress are saved in the notebook file as you work." : IN_VSCODE ? "Your code is saved in the notebook file when you save (Ctrl+S, or Cmd+S on a Mac)." : "Your code is saved in this browser, so you can come back later."]).map((x) => el("li", { html: x }))),
+    el("p", { class: "muted", html: "Your own notebook? Use <b>Open notebook</b>. Files it reads go in <b>Data files</b>." })));
+}
+function progressKey() { return "nbt:p:" + S.key; }
+let syncTimer = 0;
+function saveProgress() {
+  if (HOST.changed) { clearTimeout(syncTimer); syncTimer = setTimeout(() => { try { HOST.changed(exportNotebook()); } catch (e) { console.error(e); } }, 600); return; }
+  if (!S.key) return;
+  const data = {};
+  for (const c of S.cells) if (c.type === "code" && (c.edit != null || c.exStatus || c.hints)) data[c.id] = { e: c.edit != null && c.edit !== c.source ? c.edit : undefined, s: c.exStatus, h: c.hints };
+  store.set(progressKey(), data);
+}
+function loadNotebook(parsed) {
+  S.nb = parsed; S.cells = parsed.cells; S.isSample = parsed.isSample; S.active = -1; S.chat = []; S.sinceQuiz = 0; S.exp = null;
+  S.key = hash(parsed.name + "|" + parsed.cells.map((c) => c.source).join("\u0001"));
+  const saved = HOSTED_FILE ? null : store.get(progressKey(), null);
+  let restored = 0;
+  if (saved) for (const c of S.cells) { const s = saved[c.id]; if (s) { if (s.e != null) { c.edit = s.e; restored++; } if (s.s) c.exStatus = s.s === "tried" ? null : s.s; if (s.h) c.hints = s.h; } }
+  $("#nbTitle").textContent = parsed.title; $("#nbTitle").title = parsed.name;
+  if (S.mode) renderModeStrip();
+  $("#sampleChip").hidden = !parsed.isSample;
+  if (S.rt) { try { S.rt.reset(); } catch {} }
+  renderNotebook(); welcome();
+  if (restored) showNotice(`<b>Welcome back.</b> Your code in ${restored} cell${restored > 1 ? "s was" : " was"} restored from last time. Run the cells again to rebuild the variables.`, [el("button", { class: "btn", text: "Start fresh", onclick: () => { store.set(progressKey(), null); loadNotebook(parseNotebook(parsed.nb, parsed.name, parsed.isSample)); } })]);
+  else if (S.mode === "practice" && !S.cells.some((c) => c.isEx)) showNotice("<b>No exercise cells found</b> in this notebook. You can still edit any cell and press <b>Check my code</b>.");
+  else showNotice(null);
+  const first = S.cells.findIndex((c) => c.type === "code" && !c.hidden); if (first >= 0) setActive(first);
+  $("#nbcol").scrollTop = 0;
+}
+function sample(mode) { return parseNotebook($(mode === "practice" ? "#nb-practice" : "#nb-guided").textContent, mode === "practice" ? "ARI1101_W4_practice_rents.ipynb" : "ARI1101_W4_guided_linear_regression.ipynb", true); }
+function setMode(mode, { keepNotebook } = {}) {
+  S.mode = mode;
+  $("#app").dataset.mode = mode;
+  $("#m-guided").setAttribute("aria-pressed", mode === "guided"); $("#m-practice").setAttribute("aria-pressed", mode === "practice");
+  if (S.exp) S.exp.cancel();
+  if (S.nb && keepNotebook !== false && !S.isSample) {
+    S.cells.forEach((c) => { if (c.cm) c.edit = c.cm.getValue() !== c.source ? c.cm.getValue() : c.edit; });
+    renderNotebook(); welcome();
+    if (mode === "practice" && !S.cells.some((c) => c.isEx)) showNotice("<b>No exercise cells found</b> in this notebook. You can still edit any cell and press <b>Check my code</b>."); else showNotice(null);
+  } else loadNotebook(sample(mode));
+  renderModeStrip();
+}
+function exportNotebook() {
+  const nb = JSON.parse(JSON.stringify(S.nb.nb));
+  const split = (s) => { const l = s.split("\n"); return l.map((x, i) => (i < l.length - 1 ? x + "\n" : x)).filter((x, i, a) => !(i === a.length - 1 && x === "")); };
+  nb.cells = S.nb.cells.map((c) => {
+    const raw = JSON.parse(JSON.stringify(c.raw));
+    if (c.added && c.type === "markdown") { raw.source = split(c.source); return raw; }
+    if (c.type !== "code" || c.hidden) return raw;
+    const src = c.cm ? c.cm.getValue() : c.edit != null ? c.edit : c.source;
+    raw.source = split(src);
+    // keep the lecturer's code and the student's progress, so the file reopens as it was left
+    raw.metadata = raw.metadata || {};
+    const tm = Object.assign({}, raw.metadata.tutor || {});
+    if (src !== c.source && !c.added) tm.original = c.source; else delete tm.original;
+    if (c.exStatus && c.exStatus !== "tried") tm.status = c.exStatus; else delete tm.status;
+    if (c.hints) tm.hints = c.hints; else delete tm.hints;
+    if (Object.keys(tm).length) raw.metadata.tutor = tm; else delete raw.metadata.tutor;
+    const r = c.result;
+    if (r) { // cells not run in this session keep the outputs the file already had
+      raw.execution_count = c.count || null; raw.outputs = [];
+      if (r.stdout) raw.outputs.push({ output_type: "stream", name: "stdout", text: split(r.stdout) });
+      if (r.stderr) raw.outputs.push({ output_type: "stream", name: "stderr", text: split(r.stderr) });
+      for (const x of r.results || []) { const data = { "text/plain": split(x.text || "") }; if (x.kind === "html") data["text/html"] = split(x.html); raw.outputs.push({ output_type: "execute_result", execution_count: c.count || null, data, metadata: {} }); }
+      for (const f of r.figures || []) raw.outputs.push({ output_type: "display_data", data: { "image/png": f, "text/plain": ["<Figure>"] }, metadata: {} });
+      if (r.error) raw.outputs.push({ output_type: "error", ename: r.error.ename, evalue: r.error.evalue, traceback: (r.error.traceback || "").split("\n") });
+    }
+    return raw;
+  });
+  return JSON.stringify(nb, null, 1) + "\n";
+}
+
+/* ============================================================ the two modes, explained */
+const exerciseCount = () => S.cells.filter((c) => c.type === "code" && !c.hidden && c.isEx).length;
+function recommendedMode() { return exerciseCount() > 0 ? "practice" : "guided"; }
+function renderModeStrip() {
+  const g = S.mode === "guided", n = exerciseCount();
+  $("#modeName").textContent = g ? "Guided walkthrough" : "Practice";
+  $("#modeLine").textContent = g
+    ? "Run each cell in order. The tutor explains it underneath and asks you questions as you go."
+    : n ? `Write the code in the ${n} cell${n > 1 ? "s" : ""} headed Exercise. The tutor checks your work and gives hints; the other cells just set things up.`
+        : "This notebook has no exercise cells. Guided walkthrough suits it better.";
+  $("#modeSwitch").textContent = g ? "Switch to Practice" : "Switch to Guided walkthrough";
+}
+// One dialog serves as the start screen and as the "What's the difference?" explainer.
+function showModes(start) {
+  const d = $("#modes"), n = exerciseCount(), rec = S.isSample ? null : recommendedMode();
+  $("#modesTitle").textContent = start ? "How do you want to work on this notebook?" : "Guided walkthrough or Practice?";
+  $("#modeRec").textContent = S.isSample ? "Each mode opens its own sample notebook from ARI1101 Week 4. To use your lecturer's notebook, choose a mode and then Open notebook." : n
+    ? `This notebook has ${n} exercise cell${n > 1 ? "s" : ""}, so Practice fits it. You can switch at any time.`
+    : "This notebook has no exercise cells, so Guided walkthrough fits it. You can switch at any time.";
+  for (const m of ["guided", "practice"]) {
+    const b = $("#pick-" + m);
+    b.className = "btn" + (m === rec ? " primary" : "");
+    b.textContent = (start ? "Start " : m === S.mode ? "Keep " : "Switch to ") + (m === "guided" ? "guided walkthrough" : "practice");
+    $("#card-" + m).classList.toggle("rec", m === rec);
+    $("#card-" + m).classList.toggle("current", !start && m === S.mode);
+  }
+  $("#modesClose").hidden = !!start;
+  d.dataset.start = start ? "1" : "";
+  if (!d.open) d.showModal();
+}
+function recommendedModeFor(text) { try { return parseNotebook(text, "x.ipynb", false).cells.some((c) => c.type === "code" && !c.hidden && c.isEx) ? "practice" : "guided"; } catch { return "guided"; } }
+function pickMode(m) {
+  const d = $("#modes"); d.close();
+  store.set("nbt:seenModes", true);
+  if (HOST.modeChosen) HOST.modeChosen(m);
+  if (m !== S.mode || d.dataset.start) setMode(m);
+}
+
+/* ============================================================ UI wiring */
+function autoGrow(t) { t.style.height = "auto"; t.style.height = Math.min(140, t.scrollHeight) + "px"; }
+const isSheet = () => matchMedia("(max-width: 1180px)").matches;
+// On a narrow screen the panel is a drawer; on a wide one it can be hidden, and stays hidden until shown again.
+function tutorShut() { return isSheet() ? !$("#tutor").classList.contains("open") : document.body.classList.contains("tutor-hidden"); }
+function openTutor(open) {
+  if (isSheet()) $("#tutor").classList.toggle("open", open);
+  else { document.body.classList.toggle("tutor-hidden", !open); store.set("nbt:tutorHidden", open ? null : true); }
+  if (open) $("#unread").hidden = true;
+}
+function renderFiles() {
+  const ul = $("#fileList"); ul.textContent = "";
+  if (!S.files.length) ul.append(el("li", { text: "No files added yet" }));
+  S.files.forEach((f) => ul.append(el("li", { text: f })));
+}
+function togglePanel(btn, panel) {
+  const open = panel.hidden; document.querySelectorAll(".panel").forEach((p) => (p.hidden = true)); document.querySelectorAll("[aria-expanded]").forEach((b) => b.setAttribute("aria-expanded", "false"));
+  panel.hidden = !open; btn.setAttribute("aria-expanded", String(open));
+}
+function persistSettings() { store.set("nbt:settings", S.settings); }
+function applyLevelUI() { $("#level").value = S.level; $("#noteFld").hidden = S.level !== "custom"; $("#s-note").value = S.note; }
+async function openFile(file) {
+  if (IS_LOCAL) { try { await HOST.uploadNotebook(file); } catch (e) { showNotice(`<b>Couldn't open ${esc(file.name)}.</b> ${esc(e.message || e)}`); } return; }
+  try {
+    const text = await file.text();
+    const parsed = parseNotebook(text, file.name, false);
+    loadNotebook(parsed);
+    showModes(true);
+  } catch (e) { showNotice(`<b>Couldn't open ${esc(file.name)}.</b> ${esc(e.message || e)}`); }
+}
+
+function init() {
+  // hash shortcuts, e.g. #ics5111-practice
+  const tokens = (location.hash || "").replace(/^#/, "").toLowerCase().split(/[-.]/);
+  if (tokens.includes("ari1101")) S.level = "ari1101";
+  if (tokens.includes("ics5111")) S.level = "ics5111";
+  const startMode = tokens.includes("practice") ? "practice" : "guided";
+  applyLevelUI();
+  $("#s-explain").checked = S.settings.explain; $("#s-predict").checked = S.settings.predict; $("#s-review").checked = S.settings.review;
+  $("#s-quiz").value = String(S.settings.quiz); $("#s-speed").value = S.settings.speed;
+
+  $("#m-guided").onclick = () => S.mode !== "guided" && setMode("guided");
+  $("#m-practice").onclick = () => S.mode !== "practice" && setMode("practice");
+  $("#level").onchange = (e) => { S.level = e.target.value; store.set("nbt:level", S.level); applyLevelUI(); };
+  $("#s-note").oninput = (e) => { S.note = e.target.value; store.set("nbt:note", S.note); };
+  $("#s-explain").onchange = (e) => { S.settings.explain = e.target.checked; persistSettings(); };
+  $("#s-predict").onchange = (e) => { S.settings.predict = e.target.checked; persistSettings(); S.cells.forEach(renderTags); };
+  $("#s-review").onchange = (e) => { S.settings.review = e.target.checked; persistSettings(); };
+  $("#s-quiz").onchange = (e) => { S.settings.quiz = +e.target.value; persistSettings(); };
+  $("#s-speed").onchange = (e) => { S.settings.speed = e.target.value; persistSettings(); };
+  $("#settingsBtn").onclick = () => togglePanel($("#settingsBtn"), $("#settingsPanel"));
+  $("#dataBtn").onclick = () => togglePanel($("#dataBtn"), $("#dataPanel"));
+  document.addEventListener("click", (e) => { if (!e.target.closest(".pop")) { document.querySelectorAll(".panel").forEach((p) => (p.hidden = true)); } });
+  $("#openBtn").onclick = () => $("#openFile").click();
+  $("#openFile").onchange = (e) => { const f = e.target.files[0]; if (f) openFile(f); e.target.value = ""; };
+  $("#addData").onclick = () => $("#dataFile").click();
+  $("#dataFile").onchange = async (e) => {
+    for (const f of e.target.files) { if (S.py || IS_LOCAL) await writeData(f); else { (S.pendingFiles = S.pendingFiles || []).push(f); if (!S.files.includes(f.name)) S.files.push(f.name); renderFiles(); } }
+    e.target.value = "";
+  };
+  $("#runNext").onclick = () => { const j = nextUnrun(); if (j < 0) { showNotice("<b>Every code cell has been run.</b> Edit a cell and run it again, or ask the tutor a question."); return; } scrollToCell(S.cells[j]); runCell(j, { advance: false }); };
+  $("#runAbove").onclick = runAbove;
+  $("#restart").onclick = async () => {
+    if (!S.rt) return; S.rt.reset();
+    S.cells.forEach((c) => { if (c.type === "code") { c.result = null; c.count = null; c.veiled = false; renderOutputs(c); } });
+    renderProgress(); showNotice("<b>Python restarted.</b> All variables were cleared. Run the cells again from the top.");
+  };
+  $("#helpBtn").onclick = () => $("#help").showModal();
+  $("#clearNotes").onclick = () => { $("#clearDlg").showModal(); $("#clearKeep").focus(); };
+  $("#clearKeep").onclick = () => $("#clearDlg").close();
+  $("#clearGo").onclick = () => { $("#clearDlg").close(); clearTutorNotes(); };
+  $("#helpClose").onclick = () => $("#help").close();
+  $("#sendAsk").onclick = askTutor;
+  $("#ask").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); askTutor(); } });
+  $("#ask").addEventListener("input", (e) => autoGrow(e.target));
+  if (store.get("nbt:tutorHidden", null)) document.body.classList.add("tutor-hidden");
+  $("#fab").onclick = () => openTutor(tutorShut());
+  $("#delKeep").onclick = () => $("#delDlg").close();
+  $("#closeTutor").onclick = () => openTutor(false);
+  // drag and drop a notebook or data file anywhere on the notebook column
+  const col = $("#nbcol");
+  col.addEventListener("dragover", (e) => { e.preventDefault(); col.classList.add("drop"); });
+  col.addEventListener("dragleave", (e) => { if (e.target === col) col.classList.remove("drop"); });
+  col.addEventListener("drop", async (e) => {
+    e.preventDefault(); col.classList.remove("drop");
+    for (const f of e.dataTransfer.files) { if (/\.ipynb$/i.test(f.name)) await openFile(f); else if (S.py || IS_LOCAL) await writeData(f); }
+  });
+  renderFiles();
+  $("#modeHelp").onclick = () => showModes(false);
+  $("#modeSwitch").onclick = () => setMode(S.mode === "guided" ? "practice" : "guided");
+  $("#pick-guided").onclick = () => pickMode("guided");
+  $("#pick-practice").onclick = () => pickMode("practice");
+  $("#modesClose").onclick = () => $("#modes").close();
+  $("#modes").addEventListener("cancel", (e) => { if ($("#modes").dataset.start) e.preventDefault(); }); // the start screen needs a choice
+  $("#s-quizp").checked = S.settings.quizPractice;
+  $("#s-quizp").onchange = (e) => { S.settings.quizPractice = e.target.checked; persistSettings(); };
+  if (IS_LOCAL) {
+    $("#dlBtn").hidden = true; $("#saveHint").hidden = false; $("#saveHint").textContent = "Saved automatically";
+    $("#openBtn").onclick = () => HOST.openDialog();
+    $("#llmGrp").hidden = false; $("#llmFld").hidden = false; $("#llmBtn").onclick = () => HOST.setup();
+    HOST.describeLLM($("#llmName"));
+    $("#interruptBtn").onclick = () => HOST.interrupt();
+    $("#dataIntro").innerHTML = "Python runs in the notebook's folder. Read files by their path from the notebook, e.g. <code>pd.read_csv(\"data/houses.csv\")</code>; files Python writes are saved there too. <b>Add data file</b> copies a file from elsewhere on your computer into that folder; it is also how you add a course dataset that could not be downloaded.";
+    $("#privacyHint").textContent = "Your settings and API key stay on this computer. Your code, outputs and progress are saved in the notebook file.";
+    $("#helpIntro").innerHTML = "Any Jupyter or Colab <code>.ipynb</code> works as it is. Students put the notebooks you give them in the tutor's folder (or add them with <b>Open notebook</b>), choose the mode, and work; the file is saved as they go. A notebook built with <b>ai-learning-kit</b> also tells the tutor its unit and session, so the cohort and the session's scope are set for them.";
+    $("#helpRuns").innerHTML = "Notebook Tutor runs on the student's own computer: a Jupyter kernel started in the notebook's folder, with the libraries installed with the tutor (NumPy, pandas, Matplotlib, seaborn, scikit-learn, networkx and ai-learning-kit; PyTorch and PyTorch Geometric with the <code>advanced</code> option). Files are read and written in the notebook's folder, <code>%pip</code> works, and <code>input()</code> does not. The language model is the student's choice: Gemini, Claude or OpenAI with their own API key, or a model on their own computer through Ollama. The key stays in the tutor's settings on that computer and never enters the notebook or the kernel. For notebooks built with ai-learning-kit, the tutor explains the steps in focus, treats the kit's black boxes as black boxes, and never overrides the kit's checks.";
+  } else if (IN_VSCODE) {
+    $("#openBtn").hidden = true; $("#dlBtn").hidden = true; $("#saveHint").hidden = false;
+    $("#dataIntro").innerHTML = "Data files in the notebook's folder, and in its subfolders, are added for you. Read them by their path from the notebook, e.g. <code>pd.read_csv(\"data/houses.csv\")</code>. Files Python writes stay in memory and are not saved to disk.";
+    $("#privacyHint").textContent = "Your settings are kept in VS Code. Your code and progress are saved in the notebook file.";
+    $("#saveHint").textContent = /Mac/i.test(navigator.platform || navigator.userAgent) ? "Save with Cmd+S" : "Save with Ctrl+S";
+  }
+  if (HOSTED_FILE) {
+    HOST.onInit = (data) => {
+      S.kit = data.kit || null;
+      if (data.cohort && (data.cohortForce || !store.get("nbt:level", null))) { S.level = data.cohort; S.note = data.cohortNote || S.note; applyLevelUI(); }
+      S.mode = data.mode || recommendedModeFor(data.text) ;
+      $("#app").dataset.mode = S.mode;
+      $("#m-guided").setAttribute("aria-pressed", S.mode === "guided"); $("#m-practice").setAttribute("aria-pressed", S.mode === "practice");
+      loadNotebook(parseNotebook(data.text, data.fileName, false));
+      renderModeStrip();
+      if (!data.mode) showModes(true);
+      if (data.notice) showNotice(data.notice);
+    };
+    HOST.onReload = (text) => { const m = S.mode; loadNotebook(parseNotebook(text, S.nb.name, false)); S.mode = m; renderModeStrip(); showNotice("<b>The notebook file changed outside the tutor</b>, so it was reloaded. Run the cells again."); };
+    HOST.onSetMode = (m) => { if (m !== S.mode) setMode(m); };
+    HOST.onFiles = (files) => IS_LOCAL ? setLocalFiles(files) : writeHostFiles(files);
+    HOST.ready();
+  } else {
+    setMode(startMode, { keepNotebook: false });
+    if (!store.get("nbt:seenModes", false) && !tokens.includes("practice") && !tokens.includes("guided")) showModes(true);
+  }
+  S.pyReady = bootPython();
+  S.pyReady.catch(() => {});
+  // the tutor (Claude) and file saving
+  if (window.claude && claude.use) {
+    claude.use("sample").then((s) => { S.sample = s || null; if (!s) showBanner("The tutor can't connect in this view. Python still runs, and your lecturer's own questions still work."); }).catch(() => { S.sample = null; });
+    claude.use("downloads").then((d) => { if (d) { S.downloads = d; $("#dlBtn").hidden = false; } }).catch(() => {});
+  } else { S.sample = null; showBanner("Open this page inside Claude to use the tutor. Python still runs here."); }
+  if (HOSTED_FILE && HOST.configured === false) showSetupBanner();
+  $("#dlBtn").onclick = async () => {
+    const name = (S.nb.name || "notebook.ipynb").replace(/(_my_work)?(\.ipynb)?(\.json)?$/i, "") + "_my_work.ipynb.json";
+    try {
+      await S.downloads.save({ filename: name, data: exportNotebook() });
+      showNotice(`<b>Saved ${esc(name)}.</b> To open it in Jupyter or Colab, remove the <code>.json</code> ending so the name ends in <code>.ipynb</code>. You can also reopen it here as it is.`);
+    } catch (e) {
+      const code = e && e.code;
+      if (code === "declined") return;
+      if (code === "rate_limited") showNotice("<b>A save is already waiting for your answer.</b> Finish that one first.");
+      else showNotice("<b>Saving isn't available in this view.</b>");
+    }
+  };
+}
+init();
+
+</script>
+
+</body></html>
