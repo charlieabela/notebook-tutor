@@ -57,7 +57,7 @@ def _check() -> int:
             m = __import__(mod)
             print(f"  ok   {mod} {getattr(m, '__version__', '')} (optional)")
         except Exception:
-            print(f"  --   {mod} not installed (optional; needed only by advanced sessions)")
+            print(f"  --   {mod} not installed (optional; needed only by advanced topics)")
     data = S.load()
     print(f"Settings file: {S.config_dir() / 'settings.json'}")
     print(f"Language model: {data['provider']}")

@@ -1,4 +1,4 @@
-"""A Session 03 notebook (web pages and APIs) through the tutor: requests, Beautiful Soup and the kit's saved copies."""
+"""A web-data notebook through the tutor: requests, Beautiful Soup and the kit's saved copies."""
 import json
 import shutil
 from pathlib import Path
@@ -7,13 +7,13 @@ DATA = Path(__file__).parent / "data"
 
 
 def test_web_session_through_the_tutor(tutor):
-    shutil.copy(DATA / "kit_s03_short.ipynb", tutor.app.root / "S03_short.ipynb")
-    status, out = tutor.call("GET", "/api/kit/context?path=S03_short.ipynb")
-    assert out["context"]["session"] == "S03" and "Available on request" in out["context"]["scope"]
+    shutil.copy(DATA / "kit_web_data_short.ipynb", tutor.app.root / "web_data_short.ipynb")
+    status, out = tutor.call("GET", "/api/kit/context?path=web_data_short.ipynb")
+    assert out["context"]["topic"] == "web-data" and "Available on request" in out["context"]["scope"]
     assert "scrape_listings" in out["context"]["tools"]["functions"]
 
-    assert tutor.call("POST", "/api/kernel/start", {"path": "S03_short.ipynb"})[1]["started"]
-    nb = json.loads((tutor.app.root / "S03_short.ipynb").read_text())
+    assert tutor.call("POST", "/api/kernel/start", {"path": "web_data_short.ipynb"})[1]["started"]
+    nb = json.loads((tutor.app.root / "web_data_short.ipynb").read_text())
     code = ["".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "code"]
     status, r = tutor.call("POST", "/api/run", {"code": code[0]})            # the kit's install line is skipped
     assert "already provides" in r["notes"][0] and r["error"] is None

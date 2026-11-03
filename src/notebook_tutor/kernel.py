@@ -103,9 +103,9 @@ def prepare(code: str) -> tuple[str, list]:
     installed = _kit_version()
     for ln in code.split("\n"):
         m = KIT_PIN.match(ln)
-        if m and ("ai-learning-kit" in m["args"] or "ari1101kit" in m["args"]) and installed:
+        if m and "ai-learning-kit" in m["args"] and installed:
             pkgs = [a for a in m["args"].split() if not a.startswith("-") and a.strip("\"'") != "@"]
-            if all(("ai-learning-kit" in a or "ari1101kit" in a) for a in pkgs):
+            if all("ai-learning-kit" in a for a in pkgs):
                 notes.append(f"the tutor already provides ai-learning-kit {installed}, so nothing needs installing ({ln.strip()})")
                 indent = ln[: len(ln) - len(ln.lstrip())]
                 out.append(indent + "pass" if indent else "")

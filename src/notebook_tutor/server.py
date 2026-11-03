@@ -93,15 +93,15 @@ def _hash(data: bytes) -> str:
 
 
 def notebook_home(data: bytes) -> str:
-    """Where an added notebook is kept, relative to the tutor's folder: <UNIT>/<SESSION> for a notebook built
-    with ai-learning-kit, so a session's notebooks share one folder (and the data files added for them), and
-    notebooks of different units never mix; the tutor's folder itself for any other notebook."""
+    """Where an added notebook is kept, relative to the tutor's folder: <topic> for a notebook built with
+    ai-learning-kit, so a topic's notebooks share one folder (and the data files added for them), and notebooks
+    of different topics never mix; the tutor's folder itself for any other notebook."""
     try:
         meta = json.loads(data.decode("utf-8")).get("metadata", {}).get("ai_learning_kit") or {}
     except Exception:
         return "."
-    parts = [re.sub(r"[^A-Za-z0-9_-]", "", str(meta.get(k) or "")) for k in ("unit", "session")]
-    return "/".join(parts) if all(parts) else "."
+    topic = re.sub(r"[^a-z0-9-]", "", str(meta.get("topic") or "").lower())
+    return topic or "."
 
 
 class App:
@@ -266,10 +266,10 @@ class App:
         except Exception:
             return {"kit": None}
         out = {"kit": kit_version, "notebook_meta": meta}
-        if meta.get("unit") and meta.get("session"):
+        if meta.get("topic"):
             try:
                 from ai_learning_kit.core import registry
-                out["context"] = registry.tutor_context(meta["unit"], meta["session"])
+                out["context"] = registry.tutor_context(meta["topic"], level=meta.get("level"))
             except Exception as e:
                 out["context_error"] = f"{type(e).__name__}: {e}"
         nb_version = meta.get("kit_version")

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "notebook-tutor"
-version = "0.1.19"
+version = "0.2.0"
 description = "A teaching assistant for Jupyter notebooks that runs on the student's own computer"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -29,13 +29,15 @@ dependencies = [
   "networkx>=3.2",
   "openpyxl>=3.1",
   "requests>=2.31",       # notebooks that download data (APIs such as Europe PMC and Open-Meteo)
-  "beautifulsoup4>=4.11", # notebooks that read web pages (ARI1101 S03)
+  "beautifulsoup4>=4.11", # notebooks that read web pages (the web-data topic)
+  "nltk>=3.8",            # stemming in the text-to-graphs topic
+  "neo4j>=5.14",          # the Neo4j driver: setup checks and graph-database topics
   "pip>=24",              # so that %pip install works inside notebooks, as in Jupyter and Colab
-  "ai-learning-kit @ git+https://github.com/charlieabela/ai-learning-kit@v0.11.1",   # through git, so a private repository works with your GitHub login
+  "ai-learning-kit @ git+https://github.com/charlieabela/ai-learning-kit@v1.0.0",   # the public repository; releases are published there from the development repository
 ]
 
 [project.optional-dependencies]
-# Sessions on dense retrieval, embeddings, transformers and graph neural networks (ICS2205, ICS5111).
+# Topics on dense retrieval, embeddings, transformers, graph neural networks and knowledge graphs.
 advanced = ["torch>=2.2", "torch_geometric>=2.5", "sentence-transformers>=3.0", "transformers>=4.40", "nltk>=3.8", "neo4j>=5.14", "rdflib>=7.0", "owlrl>=6.0"]
 dev = ["pytest>=8", "playwright>=1.40"]
 

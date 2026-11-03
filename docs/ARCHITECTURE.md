@@ -23,7 +23,7 @@ calls to the language model the student chose.
 - **`server.py`** serves the page and its libraries, lists, opens and saves notebooks under one root folder,
   accepts uploads, starts one kernel per open notebook, and holds the language-model connection. The root folder
   is `notebooks/` in the tutor's git clone (ignored by git) or `~/NotebookTutor` for an installed tutor. An added
-  notebook is kept once: a kit notebook in `<UNIT>/<SESSION>/`, any other in the root; adding one the student
+  notebook is kept once: a kit notebook in `<topic>/`, any other in the root; adding one the student
   already has returns `exists` (with whether it is the same file that was added, from the checksums in
   `.tutor/added.json`) and nothing is written until the student opens the saved copy or replaces it.
 - **`kernel.py`** starts an ordinary IPython kernel with the same Python as the tutor, so every installed library
@@ -40,9 +40,9 @@ calls to the language model the student chose.
 
 ## The kit and the tutor
 
-A notebook built with ai-learning-kit stores its unit and session in `metadata.ai_learning_kit`. The server asks
-the kit for `registry.tutor_context(unit, session)`: the cohort, the case, the tasks with their guidance, and the
-session's **scope**, which says which steps are in focus (explain in depth), which are black boxes (say what goes
+A notebook built with ai-learning-kit stores its topic (and optionally its level) in `metadata.ai_learning_kit`.
+The server asks the kit for `registry.tutor_context(topic, level=...)`: the level's description, the topics it
+builds on, the case, the tasks with their guidance, and the topic's **scope**, which says which steps are in focus (explain in depth), which are black boxes (say what goes
 in and out, and where the method is taught) and which are out of scope. The page adds the scope to every prompt,
 adds a task's guidance when a cell refers to that task, and instructs the model never to contradict the kit's
 checks or reveal the values they check. The kit decides what is correct; the model only explains.

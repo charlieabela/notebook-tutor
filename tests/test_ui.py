@@ -37,12 +37,12 @@ def test_guided_walkthrough(browser, tutor, fake_llm):
     page.wait_for_selector("#ntOpen[open]")                        # the folder's notebooks
     if SHOTS:
         page.screenshot(path=os.path.join(SHOTS, "open.png"))
-    page.click("#ntOpen li:has-text('S02_short.ipynb')")
+    page.click("#ntOpen li:has-text('data_formats_short.ipynb')")
     page.wait_for_selector("#modes[open]")                         # first visit: choose a mode
     page.click("#pick-guided")
     page.wait_for_function("document.querySelector('#pyText').textContent === 'Python ready'", timeout=90000)
-    assert "S02 (test copy)" in page.inner_text("#nbTitle") or "Session 02" in page.inner_text("#nbTitle")
-    assert page.input_value("#level") == "ari1101"                  # cohort from the kit metadata
+    assert "data-formats (test copy)" in page.inner_text("#nbTitle")
+    assert page.input_value("#level") == "introductory"             # the topic's level, from the kit
 
     for i in range(4):                                              # pip (skipped), imports, kit.start, read CSV
         page.click("#runNext")
@@ -60,12 +60,12 @@ def test_guided_walkthrough(browser, tutor, fake_llm):
     # the notebook file is saved as the student works
     deadline = time.time() + 10
     while time.time() < deadline:
-        nb = json.loads((tutor.app.root / "S02_short.ipynb").read_text())
+        nb = json.loads((tutor.app.root / "data_formats_short.ipynb").read_text())
         if any(c.get("outputs") for c in nb["cells"] if c["cell_type"] == "code"):
             break
         time.sleep(0.3)
     assert any(c.get("outputs") for c in nb["cells"] if c["cell_type"] == "code")
-    assert (tutor.app.root / "answers" / "ARI1101_S02_Test_Student.json").is_file()
+    assert (tutor.app.root / "answers" / "data-formats_Test_Student.json").is_file()
 
     # the setup dialog shows that a key is stored, never the key
     page.click("#settingsBtn")
@@ -80,13 +80,13 @@ def test_guided_walkthrough(browser, tutor, fake_llm):
 
 
 def test_first_run_without_notebooks(browser, tutor):
-    (tutor.app.root / "S02_short.ipynb").unlink()
+    (tutor.app.root / "data_formats_short.ipynb").unlink()
     page, errors = open_page(browser, tutor)
     page.wait_for_selector("#ntOpen[open]")
     assert "not added a notebook yet" in page.inner_text("#ntOpen")
     page.click("#ntOpen [data-samples]")
     page.wait_for_selector("#modes[open]")
-    assert (tutor.app.root / "samples" / "ARI1101_W4_guided_linear_regression.ipynb").is_file()
+    assert (tutor.app.root / "samples" / "guided_linear_regression.ipynb").is_file()
     page.click("#pick-guided")
     page.wait_for_function("document.querySelector('#pyText').textContent === 'Python ready'", timeout=90000)
     # no language model: Python works and the page says how to set the tutor up
@@ -103,14 +103,14 @@ def test_links_open_in_the_computers_browser_when_framed(browser, tutor, monkeyp
     import notebook_tutor.server as srv
     opened = []
     monkeypatch.setattr(srv.webbrowser, "open", lambda url: opened.append(url) or True)
-    nb = json.loads((tutor.app.root / "S02_short.ipynb").read_text())
+    nb = json.loads((tutor.app.root / "data_formats_short.ipynb").read_text())
     nb["cells"][0]["source"] = "# Video\n\n[Watch the video](https://www.youtube.com/watch?v=NqZA5atdg3A)"
-    (tutor.app.root / "S02_short.ipynb").write_text(json.dumps(nb))
+    (tutor.app.root / "data_formats_short.ipynb").write_text(json.dumps(nb))
     page = browser.new_page()
     page.set_content(f'<iframe id="f" src="{tutor.base}/?t={tutor.app.token}" style="width:1300px;height:900px">'
                      "</iframe>")
     frame = page.frame_locator("#f")
-    frame.locator("#ntOpen li:has-text('S02_short.ipynb')").click()
+    frame.locator("#ntOpen li:has-text('data_formats_short.ipynb')").click()
     frame.locator("#pick-guided").click()
     frame.locator("a:has-text('Watch the video')").click()
     deadline = time.time() + 10
@@ -123,7 +123,7 @@ def test_links_open_in_the_computers_browser_when_framed(browser, tutor, monkeyp
 def test_a_failed_checkpoint_can_be_tried_again(browser, tutor, fake_llm):
     use_fake(tutor, fake_llm)
     page, errors = open_page(browser, tutor)
-    page.click("#ntOpen li:has-text('S02_short.ipynb')")
+    page.click("#ntOpen li:has-text('data_formats_short.ipynb')")
     page.click("#pick-guided")
     page.wait_for_function("document.querySelector('#pyText').textContent === 'Python ready'", timeout=90000)
     fake_llm.mode = "never_json"
@@ -176,7 +176,7 @@ def test_a_missing_dataset_points_to_the_data_files_button(browser, tutor):
     code = ("from ai_learning_kit.datasets import DatasetUnavailable\n"
             "raise DatasetUnavailable('The Cora citation network is missing: it could not be downloaded from LINQS.\\n'\n"
             "                         'Add cora.tgz with the Data files button (Data files > Add data file...), then run this cell again.')")
-    (tutor.app.root / "S02_short.ipynb").unlink()
+    (tutor.app.root / "data_formats_short.ipynb").unlink()
     (tutor.app.root / "cora_test.ipynb").write_text(_plain_nb(code))
     page, errors = open_page(browser, tutor)
     page.wait_for_selector("#ntOpen[open]")
@@ -201,7 +201,7 @@ def test_a_missing_dataset_points_to_the_data_files_button(browser, tutor):
 
 
 def _open_plain(browser, tutor, name, cells):
-    (tutor.app.root / "S02_short.ipynb").unlink()
+    (tutor.app.root / "data_formats_short.ipynb").unlink()
     (tutor.app.root / name).write_text(json.dumps({"nbformat": 4, "nbformat_minor": 5, "metadata": {"kernelspec": {"name": "python3"}},
                                                     "cells": cells}))
     page, errors = open_page(browser, tutor)

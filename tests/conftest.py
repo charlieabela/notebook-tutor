@@ -119,7 +119,7 @@ def tutor(tmp_path, cfg):
     from notebook_tutor.server import serve
     root = tmp_path / "work"
     root.mkdir()
-    shutil.copy(DATA / "kit_s02_short.ipynb", root / "S02_short.ipynb")
+    shutil.copy(DATA / "kit_data_formats_short.ipynb", root / "data_formats_short.ipynb")
     app, httpd = serve(root, 0)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     yield Client(app)

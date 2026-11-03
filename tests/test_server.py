@@ -45,15 +45,15 @@ def test_static_files_and_traversal(tutor):
 # ------------------------------------------------------------------ notebooks and files
 def test_list_open_and_save_notebook(tutor):
     status, out = tutor.call("GET", "/api/notebooks")
-    assert [n["path"] for n in out["notebooks"]] == ["S02_short.ipynb"]
-    status, nb = tutor.call("GET", "/api/notebook?path=S02_short.ipynb")
+    assert [n["path"] for n in out["notebooks"]] == ["data_formats_short.ipynb"]
+    status, nb = tutor.call("GET", "/api/notebook?path=data_formats_short.ipynb")
     data = json.loads(nb["text"])
     data["cells"][0]["source"] = "# changed"
-    assert tutor.call("PUT", "/api/notebook?path=S02_short.ipynb", {"text": json.dumps(data)})[0] == 200
-    assert json.loads((tutor.app.root / "S02_short.ipynb").read_text())["cells"][0]["source"] == "# changed"
+    assert tutor.call("PUT", "/api/notebook?path=data_formats_short.ipynb", {"text": json.dumps(data)})[0] == 200
+    assert json.loads((tutor.app.root / "data_formats_short.ipynb").read_text())["cells"][0]["source"] == "# changed"
     # a broken save never overwrites the file
-    assert tutor.call("PUT", "/api/notebook?path=S02_short.ipynb", {"text": "not json"})[0] == 500
-    assert json.loads((tutor.app.root / "S02_short.ipynb").read_text())["cells"][0]["source"] == "# changed"
+    assert tutor.call("PUT", "/api/notebook?path=data_formats_short.ipynb", {"text": "not json"})[0] == 500
+    assert json.loads((tutor.app.root / "data_formats_short.ipynb").read_text())["cells"][0]["source"] == "# changed"
     assert tutor.call("PUT", "/api/notebook?path=notes.txt", {"text": "{}"})[0] == 400
 
 
@@ -65,35 +65,35 @@ def test_uploads(tutor):
     assert "houses.csv" in out["files"] and not any(f.endswith(".ipynb") for f in out["files"])
 
 
-def _nb(unit=None, session=None, marker="v1"):
-    meta = {"ai_learning_kit": {"unit": unit, "session": session}} if unit else {}
+def _nb(topic=None, marker="v1"):
+    meta = {"ai_learning_kit": {"topic": topic}} if topic else {}
     return json.dumps({"nbformat": 4, "nbformat_minor": 5, "metadata": meta,
                        "cells": [{"cell_type": "markdown", "id": "a", "metadata": {}, "source": marker}]}).encode()
 
 
 def test_an_added_notebook_is_kept_once(tutor):
-    add = lambda raw, how="": tutor.call("POST", f"/api/upload?kind=notebook&name=S02_1_prepare_setup.ipynb&on_exists={how}", raw=raw)
-    # a kit notebook is kept in its unit's and session's folder, with the data files added for it
-    status, out = add(_nb("ICS5111", "S02"))
-    assert status == 200 and out["saved"] == "ICS5111/S02/S02_1_prepare_setup.ipynb"
+    add = lambda raw, how="": tutor.call("POST", f"/api/upload?kind=notebook&name=1_prepare.ipynb&on_exists={how}", raw=raw)
+    # a kit notebook is kept in its topic's folder, with the data files added for it
+    status, out = add(_nb("graph-embeddings"))
+    assert status == 200 and out["saved"] == "graph-embeddings/1_prepare.ipynb"
     kept = tutor.app.root / out["saved"]
-    kept.write_bytes(_nb("ICS5111", "S02", marker="my work"))          # the student works in it
+    kept.write_bytes(_nb("graph-embeddings", marker="my work"))          # the student works in it
     # adding the same file again asks first and changes nothing
-    status, out = add(_nb("ICS5111", "S02"))
+    status, out = add(_nb("graph-embeddings"))
     assert status == 200 and out["exists"] and out["same_as_added"] is True
-    assert out["existing"] == "ICS5111/S02/S02_1_prepare_setup.ipynb" and b"my work" in kept.read_bytes()
+    assert out["existing"] == "graph-embeddings/1_prepare.ipynb" and b"my work" in kept.read_bytes()
     # a different file (the lecturer updated it) is reported as different
-    status, out = add(_nb("ICS5111", "S02", marker="v2"))
+    status, out = add(_nb("graph-embeddings", marker="v2"))
     assert status == 200 and out["exists"] and out["same_as_added"] is False
     # "Open your saved copy" keeps the work; "Replace it" takes the new file; there is only ever one copy
-    status, out = add(_nb("ICS5111", "S02", marker="v2"), "open")
+    status, out = add(_nb("graph-embeddings", marker="v2"), "open")
     assert status == 200 and out["kept"] and b"my work" in kept.read_bytes()
-    status, out = add(_nb("ICS5111", "S02", marker="v2"), "replace")
+    status, out = add(_nb("graph-embeddings", marker="v2"), "replace")
     assert status == 200 and out["replaced"] and b"v2" in kept.read_bytes()
-    assert sorted(p.name for p in kept.parent.iterdir()) == ["S02_1_prepare_setup.ipynb"]
+    assert sorted(p.name for p in kept.parent.iterdir()) == ["1_prepare.ipynb"]
     # the bookkeeping folder is not listed as a notebook folder
     names = [n["path"] for n in tutor.call("GET", "/api/notebooks")[1]["notebooks"]]
-    assert "ICS5111/S02/S02_1_prepare_setup.ipynb" in names and not any(".tutor" in n for n in names)
+    assert "graph-embeddings/1_prepare.ipynb" in names and not any(".tutor" in n for n in names)
 
 
 def test_other_notebooks_go_in_the_tutors_folder(tutor):
@@ -101,7 +101,7 @@ def test_other_notebooks_go_in_the_tutors_folder(tutor):
     assert status == 200 and out["saved"] == "mine.ipynb"
     assert tutor.call("POST", "/api/upload?kind=notebook&name=bad.ipynb", raw=b"not json")[0] == 400
     assert tutor.call("POST", "/api/upload?kind=notebook&name=x.csv", raw=b"a")[0] == 400
-    status, out = tutor.call("POST", "/api/upload?kind=notebook&name=odd.ipynb", raw=_nb("../..", "S02"))
+    status, out = tutor.call("POST", "/api/upload?kind=notebook&name=odd.ipynb", raw=_nb("../.."))
     assert status == 200 and out["saved"] == "odd.ipynb"         # unusable metadata never leaves the folder
 
 
@@ -113,9 +113,9 @@ def test_the_clone_keeps_its_own_notebooks():
 
 
 def test_prefs_round_trip(tutor, cfg):
-    assert tutor.call("PUT", "/api/prefs", {"nbt:level": "ics5111"})[0] == 200
+    assert tutor.call("PUT", "/api/prefs", {"nbt:level": "advanced"})[0] == 200
     status, body = tutor.call("GET", "/?t=" + tutor.app.token, token=False)
-    assert '"nbt:level": "ics5111"' in body
+    assert '"nbt:level": "advanced"' in body
 
 
 # ------------------------------------------------------------------ settings: the key stays on the server
@@ -196,9 +196,9 @@ def test_kernel_proxy_needs_its_own_token(tutor, fake_llm):
 
 
 def test_kit_context_from_metadata(tutor):
-    status, out = tutor.call("GET", "/api/kit/context?path=S02_short.ipynb")
+    status, out = tutor.call("GET", "/api/kit/context?path=data_formats_short.ipynb")
     ctx = out["context"]
-    assert ctx["unit"]["code"] == "ARI1101" and ctx["session"] == "S02"
+    assert ctx["topic"] == "data-formats" and ctx["level"] == "introductory" and "unit" not in ctx
     assert "Black boxes" in ctx["scope"] and "T1.1" in ctx["tasks"]
     # The bundled kit is the version the course notebooks are written for, so students see no mismatch notice.
     assert out["kit"] == out["notebook_meta"]["kit_version"] and "version_note" not in out, out.get("version_note")
@@ -206,37 +206,37 @@ def test_kit_context_from_metadata(tutor):
 
 def test_version_notice_only_when_the_notebook_needs_a_newer_kit(tutor):
     import json as _json
-    nb = _json.loads((tutor.app.root / "S02_short.ipynb").read_text())
+    nb = _json.loads((tutor.app.root / "data_formats_short.ipynb").read_text())
     for version, noted in (("0.4.0", False), ("0.5.0", False), ("9.0.0", True)):
         nb["metadata"]["ai_learning_kit"]["kit_version"] = version
-        (tutor.app.root / "S02_short.ipynb").write_text(_json.dumps(nb))
-        out = tutor.call("GET", "/api/kit/context?path=S02_short.ipynb")[1]
+        (tutor.app.root / "data_formats_short.ipynb").write_text(_json.dumps(nb))
+        out = tutor.call("GET", "/api/kit/context?path=data_formats_short.ipynb")[1]
         assert ("version_note" in out) is noted, (version, out.get("version_note"))
 
 
-def test_kit_context_for_a_session_without_tasks(tutor):
-    """ICS5111 S02: no answer book; the tutor gets the helpers, the datasets and the scope instead."""
+def test_kit_context_for_a_topic_without_tasks(tutor):
+    """graph-embeddings: no answer book; the tutor gets the helpers, the datasets and the scope instead."""
     import shutil
     from pathlib import Path
-    shutil.copy(Path(__file__).parent / "data" / "kit_ics5111_s02_short.ipynb", tutor.app.root / "ICS5111_S02_short.ipynb")
-    status, out = tutor.call("GET", "/api/kit/context?path=ICS5111_S02_short.ipynb")
+    shutil.copy(Path(__file__).parent / "data" / "kit_graph_embeddings_short.ipynb", tutor.app.root / "graph_embeddings_short.ipynb")
+    status, out = tutor.call("GET", "/api/kit/context?path=graph_embeddings_short.ipynb")
     ctx = out["context"]
-    assert ctx["unit"]["code"] == "ICS5111" and ctx["problem"] is None and ctx["tasks"] == {}
+    assert ctx["topic"] == "graph-embeddings" and ctx["level"] == "advanced" and ctx["problem"] is None and ctx["tasks"] == {}
     assert "load_cora" in ctx["tools"]["functions"] and ctx["datasets"][0]["owner"].startswith("LINQS")
-    assert "SCOPE OF THIS SESSION" in ctx["scope"] and "version_note" not in out
+    assert "SCOPE OF THIS TOPIC" in ctx["scope"] and "version_note" not in out
 
 
 def test_restart_button_ends_a_running_cell(tutor):
     import threading
     import time
-    tutor.call("POST", "/api/kernel/start", {"path": "S02_short.ipynb"})
+    tutor.call("POST", "/api/kernel/start", {"path": "data_formats_short.ipynb"})
     out = {}
     t = threading.Thread(target=lambda: out.update(r=tutor.call("POST", "/api/run",
                                                                 {"code": "import time\ntime.sleep(120)"})[1]))
     t.start()
     time.sleep(2)
     t0 = time.time()
-    assert tutor.call("POST", "/api/kernel/start", {"path": "S02_short.ipynb", "restart": True})[1]["restarted"]
+    assert tutor.call("POST", "/api/kernel/start", {"path": "data_formats_short.ipynb", "restart": True})[1]["restarted"]
     t.join(30)
     assert not t.is_alive() and time.time() - t0 < 30
     assert out["r"]["error"]["ename"] == "KernelRestart"
@@ -274,3 +274,12 @@ def test_a_cut_off_reply_is_flagged(tutor, fake_llm):
     status, out = tutor.call("POST", "/api/llm", {"prompt": "Explain."})
     assert out["truncated"] is True and out["text"]
     assert fake_llm.requests[-1]["body"]["max_tokens"] >= 4096
+
+
+def test_a_notebooks_own_level_overrides_the_topics(tutor):
+    import json as _json
+    nb = _json.loads((tutor.app.root / "data_formats_short.ipynb").read_text())
+    nb["metadata"]["ai_learning_kit"]["level"] = "research"
+    (tutor.app.root / "data_formats_short.ipynb").write_text(_json.dumps(nb))
+    ctx = tutor.call("GET", "/api/kit/context?path=data_formats_short.ipynb")[1]["context"]
+    assert ctx["level"] == "research" and ctx["cohort"].startswith("Research level")

@@ -102,15 +102,15 @@
     nbKnownResolve();
     document.title = baseName(current).replace(/\.ipynb$/i, "") + " · Notebook Tutor";
     const ctx = kit.context || null;
-    const unit = ctx && ctx.unit && ctx.unit.code ? ctx.unit.code.toLowerCase() : null;
-    const known = ["ari1101", "ics2205", "ics5111"];
+    const meta = kit.notebook_meta || {};
+    const level = meta.level || (ctx && ctx.level) || null;   // the notebook's own level, else the topic's
     const notices = [];
     if (kit.version_note) notices.push(escH(kit.version_note));
-    if (kit.context_error) notices.push("The tutor could not read this notebook's ai-learning-kit session: " + escH(kit.context_error));
+    if (kit.context_error) notices.push("The tutor could not read this notebook's ai-learning-kit topic: " + escH(kit.context_error));
     window.NBT_HOST.onInit({
       text: nb.text, fileName: nb.name,
       mode: prefs[modeKey()] || null,
-      cohort: unit && known.includes(unit) ? unit : null, cohortForce: !!unit,
+      level, levelForce: !!level,
       kit: ctx,
       notice: notices.length ? "<b>Note.</b> " + notices.join(" ") : null,
     });
@@ -123,7 +123,7 @@
   }
 
   async function copySamples() {
-    const samples = [["nb-guided", "samples/ARI1101_W4_guided_linear_regression.ipynb"], ["nb-practice", "samples/ARI1101_W4_practice_rents.ipynb"]];
+    const samples = [["nb-guided", "samples/guided_linear_regression.ipynb"], ["nb-practice", "samples/practice_rents.ipynb"]];
     for (const [id, path] of samples) {
       const node = document.getElementById(id);
       if (node) await api("PUT", "notebook?" + q({ path }), { text: node.textContent });

@@ -10,8 +10,8 @@ your own API key, or an open-weight model on your own computer through Ollama. Y
 Without a model, Python, your lecturer's own questions and the checks in
 [ai-learning-kit](https://github.com/charlieabela/ai-learning-kit) still work.
 
-Notebook Tutor was written for the AI and data-science study units at the University of Malta (ARI1101, ICS2205,
-ICS5111), and works with any `.ipynb` notebook.
+Notebook Tutor was written for learning data science and AI at every level, from a first programming course to
+doctoral research, and works with any `.ipynb` notebook.
 
 ## Install
 
@@ -30,7 +30,7 @@ Close the window and open a new one, so that the `uv` command is found.
 **2. Install Notebook Tutor**
 
 ```
-uv tool install --python 3.12 https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.1.19.zip
+uv tool install --python 3.12 https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.2.0.zip
 ```
 
 This takes a few minutes the first time. If the next step says `nt` is not found, run `uv tool update-shell`,
@@ -38,18 +38,20 @@ then open a new window.
 
 **Which install do I need?**
 
-| Unit | Install | Adds |
+| Your notebooks are about | Install | Adds |
 |---|---|---|
-| ARI1101 | the standard install above | NumPy, pandas, Matplotlib, seaborn, scikit-learn, networkx, ai-learning-kit |
-| ICS2205, ICS5111 | the advanced install below | PyTorch, sentence-transformers, Hugging Face transformers, NLTK, PyTorch Geometric, the Neo4j driver, rdflib and owlrl |
+| data formats, web data, cleaning, exploring data, modelling, text to graphs, graph embeddings | the standard install above | NumPy, pandas, Matplotlib, seaborn, scikit-learn, networkx, NLTK, the Neo4j driver, ai-learning-kit |
+| graph neural networks, knowledge graphs, retrieval-augmented generation, transformers | the advanced install below | PyTorch, sentence-transformers, Hugging Face transformers, PyTorch Geometric, rdflib and owlrl |
+
+Your lecturer says which install the course needs.
 
 For the advanced install (about 1 GB more), use this instead:
 
 ```
-uv tool install --python 3.12 "notebook-tutor[advanced] @ https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.1.19.zip"
+uv tool install --python 3.12 "notebook-tutor[advanced] @ https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.2.0.zip"
 ```
 
-**While the repositories are private**, these download links work only for people with access, and only through git with their GitHub login. Use a clone (below) from a terminal where git can reach GitHub, for example VS Code's terminal after signing in to GitHub in VS Code; the tutor installs ai-learning-kit through git in the same way.
+**You also need [Git](https://git-scm.com/downloads)**, because the tutor installs ai-learning-kit from its GitHub repository through git. On macOS, typing `git` in a terminal offers to install it.
 
 **Alternative: work from a clone.** If you use git, clone the repository and start the tutor from its folder;
 uv creates the environment on first use:
@@ -65,7 +67,7 @@ uv run nt                       # or: uv run --extra advanced nt
 ```
 nt                              # your notebooks (see below)
 nt "path/to/my folder"          # notebooks in that folder
-nt "path/to/S02.ipynb"          # open that notebook
+nt "path/to/notebook.ipynb"    # open that notebook
 ```
 
 The tutor opens in your browser. Keep the window where you typed `nt` open while you work; press **Ctrl+C** in
@@ -75,8 +77,8 @@ it to stop the tutor. If the browser does not open, copy the address the window 
 **Open notebook › Add a notebook from this computer**. The tutor keeps your copy and saves it as you work: your
 code, outputs and progress are written into the `.ipynb` file. Next time, open it from the list, which shows the
 five notebooks you used most recently (**Show all** lists the rest; nothing is deleted). A notebook built with
-ai-learning-kit is kept in a folder for its unit and session (for example `ICS5111/S02/`), together with the
-files its code writes and the data files you add for it, so different units never mix. Run from a clone
+ai-learning-kit is kept in a folder for its topic (for example `graph-embeddings/`), together with the
+files its code writes and the data files you add for it, so different topics never mix. Run from a clone
 (`uv run nt`), the tutor keeps your notebooks in the clone's `notebooks/` folder, which git ignores, so
 `git pull` never touches them; an installed tutor keeps them in `NotebookTutor` in your home folder. You can
 open the same files in Jupyter, VS Code or Colab later.
@@ -90,7 +92,7 @@ were (`NotebookTutor` in your home folder); add the ones you still need, with yo
 
 **Data.** Notebooks built with ai-learning-kit download the datasets they need the first time, from the
 publisher's website, and check them. Run from a clone, the tutor keeps them in the clone's `data/` folder (git
-ignores it), so your clone holds the datasets of the sessions you opened and nothing else; an installed tutor
+ignores it), so your clone holds the datasets of the notebooks you opened and nothing else; an installed tutor
 keeps them in your user cache folder. If the publisher's site does not answer, the kit takes the same file from a course copy, which it checks the same way. If that fails too, the tutor says which file is missing: add the copy
 your lecturer provides (for example on the VLE) with **Data files › Add data file…** and run the cell again. The
 kit checks that it is the right file and keeps it, so you add it once, for every notebook that needs it. A copy
@@ -139,10 +141,11 @@ go to the provider you chose, under that provider's terms; choose Ollama if noth
 
 - Any Jupyter or Colab notebook works as it is. **For lecturers** in the tutor explains the optional `tutor`
   metadata for exercise cells, prediction questions, your own checkpoint questions and Try-it experiments.
-- A notebook built with ai-learning-kit carries its unit and session in its metadata (`metadata.ai_learning_kit`).
-  The tutor then sets the cohort, follows the session's scope (it explains the steps in focus, treats the kit's
-  black boxes as black boxes, and does not bring up topics taught elsewhere) and never contradicts the kit's
-  checks. The `%pip install` line for the kit is skipped, because the tutor provides the kit.
+- A notebook built with ai-learning-kit carries its topic, and optionally its level, in its metadata
+  (`metadata.ai_learning_kit`). The tutor then sets the level (introductory, intermediate, advanced or research;
+  the topic's own level when the notebook names none), follows the topic's scope (it explains the steps in focus,
+  treats the kit's support helpers as support, and does not bring up what is out of scope) and never contradicts
+  the kit's checks. Learners can change the level in the tutor at any time. The `%pip install` line for the kit is skipped, because the tutor provides the kit.
 - `nt --check` reports the installed libraries and tests the language-model settings, which helps when a student
   asks for help.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) describes how the parts fit together and the security model.

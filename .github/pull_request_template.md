@@ -11,7 +11,7 @@
 - [ ] Server, kernel and kit tests pass (`pytest -q --ignore=tests/test_ui.py`)
 - [ ] Page tests in a headless browser pass (`pytest -q tests/test_ui.py`), with screenshots looked at if the page changed
 - [ ] The ai-learning-kit version it bundles (`pyproject.toml`) exists as a release, and the version is bumped in `pyproject.toml`, `__init__.py` and the README install lines
-- [ ] A real session notebook run through the tutor, if the kernel, data or notebook handling changed (say which)
+- [ ] A real topic notebook run through the tutor, if the kernel, data or notebook handling changed (say which)
 - [ ] No links to Drive, OneDrive or SharePoint, no personal data, no attribution lines
 
 ## Not verified
