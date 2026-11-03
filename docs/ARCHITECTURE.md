@@ -30,6 +30,12 @@ calls to the language model the student chose.
   is available. `run()` returns the outputs in the shape the page renders: text, HTML tables, figures (collected
   with matplotlib's Agg backend by `kernel_helpers.py`), and errors with the line that failed. `prepare()` skips
   `%pip` lines that would only reinstall ai-learning-kit.
+- **`kits.py`** runs each notebook on the kit version it names. `requested()` reads the version from the notebook's
+  metadata or install line; when it is of an earlier major version than the tutor's kit, `ensure()` installs that
+  version once (`pip install --no-deps --target`, from the archive the install line names) into
+  `<root>/.tutor/kits/<version>/`, the server starts that notebook's kernel with the folder first on `PYTHONPATH`, and
+  `context()` asks that version, in a separate process, for the scope the tutor explains. The tutor itself keeps its
+  own kit.
 - **`llm_bridge.py`** builds the provider with `ai_learning_kit.llm.build()`, maps the page's "fast" and
   "thorough" tiers to the student's two models, extracts JSON replies (with one retry), and turns provider errors
   into the codes the page explains (`not_configured`, `bad_key`, `forbidden`, `model_not_found`,

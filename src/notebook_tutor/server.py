@@ -31,6 +31,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, quote, urlparse
 
 from . import __version__
+from . import kits
 from . import llm_bridge
 from . import settings as S
 from .kernel import KernelSession
@@ -221,6 +222,19 @@ class App:
             "JPY_SESSION_NAME": str(nb),          # lets the kit find the notebook's folder exactly
         }
 
+    def notebook_kit(self, nb: Path) -> tuple[str | None, Path | None, str]:
+        """(version, folder, problem) of the kit a notebook needs when the tutor's own kit cannot run it (a notebook
+        written for an earlier major version): folder is None when it could not be downloaded, with the reason."""
+        try:
+            data = json.loads(nb.read_text(encoding="utf-8"))
+        except Exception:
+            return None, None, ""
+        version, url = kits.requested(data)
+        if not kits.needs_own_kit(version):
+            return None, None, ""
+        path, problem = kits.ensure(self.root, version, url)
+        return version, path, problem
+
     def start_kernel(self, nb_rel: str, restart: bool = False) -> dict:
         nb = self.resolve(nb_rel, must_exist=False)
         with self.kernel_lock:
@@ -231,10 +245,14 @@ class App:
                 return {"started": False, "folder": str(nb.parent)}
             if self.kernel:
                 self.kernel.shutdown()
-            self.kernel = KernelSession(nb.parent, self.kernel_env(nb))
+            env = self.kernel_env(nb)
+            version, path, _ = self.notebook_kit(nb) if nb.is_file() else (None, None, "")
+            if path is not None:                   # the notebook's own kit version comes first on the kernel's path
+                env["PYTHONPATH"] = os.pathsep.join(filter(None, [str(path), os.environ.get("PYTHONPATH")]))
+            self.kernel = KernelSession(nb.parent, env, kit_version=version if path is not None else None)
             self.kernel_nb = nb
             self.kernel.start()
-            return {"started": True, "folder": str(nb.parent)}
+            return {"started": True, "folder": str(nb.parent), **({"kit": version} if path is not None else {})}
 
     def need_kernel(self) -> KernelSession:
         if not self.kernel:
@@ -266,6 +284,19 @@ class App:
         except Exception:
             return {"kit": None}
         out = {"kit": kit_version, "notebook_meta": meta}
+        version, path, problem = self.notebook_kit(nb)
+        if version:
+            out["notebook_kit"] = version
+            if path is None:
+                out["version_note"] = (f"This notebook was written for ai-learning-kit {version}, which the tutor "
+                                       f"runs it with, but that version could not be downloaded ({problem}). "
+                                       "Connect to the internet, then open the notebook again.")
+                return out
+            try:
+                out["context"] = kits.context(path, meta)
+            except Exception as e:
+                out["context_error"] = f"{type(e).__name__}: {e}"
+            return out
         if meta.get("topic"):
             try:
                 from ai_learning_kit.core import registry

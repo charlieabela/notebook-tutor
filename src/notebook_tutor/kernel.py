@@ -85,14 +85,11 @@ def clone_data_dir():
 
 
 def _kit_version():
-    try:
-        from importlib.metadata import version
-        return version("ai-learning-kit")
-    except Exception:
-        return None
+    from .kits import bundled
+    return bundled()
 
 
-def prepare(code: str) -> tuple[str, list]:
+def prepare(code: str, provides: str | None = None) -> tuple[str, list]:
     """Skip pip lines that would only reinstall ai-learning-kit, which the tutor already provides.
 
     A notebook written for Colab starts with %pip install "...ai-learning-kit[graphs]@https://.../v0.5.0.zip". Here the kit is
@@ -100,7 +97,7 @@ def prepare(code: str) -> tuple[str, list]:
     tutor's feet. Any other pip line runs as written.
     """
     out, notes = [], []
-    installed = _kit_version()
+    installed = provides or _kit_version()
     for ln in code.split("\n"):
         m = KIT_PIN.match(ln)
         if m and "ai-learning-kit" in m["args"] and installed:
@@ -115,9 +112,10 @@ def prepare(code: str) -> tuple[str, list]:
 
 
 class KernelSession:
-    def __init__(self, folder: Path, env_extra: dict | None = None):
+    def __init__(self, folder: Path, env_extra: dict | None = None, kit_version: str | None = None):
         self.folder = Path(folder).resolve()   # long, absolute path (Windows temp paths can be 8.3 short names)
         self.env_extra = dict(env_extra or {})
+        self.kit_version = kit_version         # the notebook's own kit version, when it is not the tutor's
         self.km = None
         self.kc = None
         self.lock = threading.Lock()
@@ -230,7 +228,7 @@ class KernelSession:
                 if self.km is not None:
                     self.shutdown()            # tidy up after a kernel that died
                 self.start()
-            src, notes = prepare(code)
+            src, notes = prepare(code, self.kit_version)
             if not src.strip():
                 src = "pass"      # an empty cell still gets an execution count, so the page counts it as run
             msg_id = self.kc.execute(src, store_history=True, allow_stdin=False)

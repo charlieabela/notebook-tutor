@@ -30,7 +30,7 @@ Close the window and open a new one, so that the `uv` command is found.
 **2. Install Notebook Tutor**
 
 ```
-uv tool install --python 3.12 https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.2.0.zip
+uv tool install --python 3.12 https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.2.1.zip
 ```
 
 This takes a few minutes the first time. If the next step says `nt` is not found, run `uv tool update-shell`,
@@ -48,7 +48,7 @@ Your lecturer says which install the course needs.
 For the advanced install (about 1 GB more), use this instead:
 
 ```
-uv tool install --python 3.12 "notebook-tutor[advanced] @ https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.2.0.zip"
+uv tool install --python 3.12 "notebook-tutor[advanced] @ https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.2.1.zip"
 ```
 
 **You also need [Git](https://git-scm.com/downloads)**, because the tutor installs ai-learning-kit from its GitHub repository through git. On macOS, typing `git` in a terminal offers to install it.
@@ -146,6 +146,7 @@ go to the provider you chose, under that provider's terms; choose Ollama if noth
   the topic's own level when the notebook names none), follows the topic's scope (it explains the steps in focus,
   treats the kit's support helpers as support, and does not bring up what is out of scope) and never contradicts
   the kit's checks. Learners can change the level in the tutor at any time. The `%pip install` line for the kit is skipped, because the tutor provides the kit.
+- **Notebooks keep working across kit releases.** A notebook runs on the kit version its first cell names. When that is an earlier major version than the tutor's (a notebook handed out before kit 1.0), the tutor downloads that version once, into `.tutor/kits/` in its notebooks folder, and runs the notebook with it, so a notebook behaves in the tutor exactly as in Colab or Jupyter. Within one major version the tutor's own kit runs every notebook, because released helpers never change.
 - `nt --check` reports the installed libraries and tests the language-model settings, which helps when a student
   asks for help.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) describes how the parts fit together and the security model.

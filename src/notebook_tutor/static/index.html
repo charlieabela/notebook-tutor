@@ -1879,7 +1879,7 @@ function kitRules() {
     ? `kit.answer(...) checks the student's values and reasoning itself and records them in an answer book next to the notebook. Never contradict the kit's verdict, never state the values it checks or the wording of a model answer, and send the student to kit.task("T…") for the full task guidance.`
     : `This topic has no answer book: the notebook checks itself (prediction-then-check cells, and practice exercises compared with the helpers). Encourage the student to predict before running a check, and do not give the answer to a prediction or an exercise before the student has tried.`;
   return `
-AI-LEARNING-KIT: This notebook is about the topic ${S.kit.topic} ("${S.kit.title}") and uses the ai-learning-kit library, imported as kit.${(S.kit.builds_on || []).length ? ` It assumes the ideas of ${S.kit.builds_on.join(", ")}.` : ""} ${grading}${tools}${data}
+AI-LEARNING-KIT: This notebook is about ${S.kit.topic ? `the topic ${S.kit.topic} ("${S.kit.title}")` : `"${S.kit.title}"`} and uses the ai-learning-kit library, imported as kit.${(S.kit.builds_on || []).length ? ` It assumes the ideas of ${S.kit.builds_on.join(", ")}.` : ""} ${grading}${tools}${data}
 ${S.kit.scope}`;
 }
 function kitTasksFor(text) {
