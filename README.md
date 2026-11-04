@@ -30,7 +30,7 @@ Close the window and open a new one, so that the `uv` command is found.
 **2. Install Notebook Tutor**
 
 ```
-uv tool install --python 3.12 https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.2.1.zip
+uv tool install --python 3.12 https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.3.0.zip
 ```
 
 This takes a few minutes the first time. If the next step says `nt` is not found, run `uv tool update-shell`,
@@ -48,7 +48,7 @@ Your lecturer says which install the course needs.
 For the advanced install (about 1 GB more), use this instead:
 
 ```
-uv tool install --python 3.12 "notebook-tutor[advanced] @ https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.2.1.zip"
+uv tool install --python 3.12 "notebook-tutor[advanced] @ https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.3.0.zip"
 ```
 
 **You also need [Git](https://git-scm.com/downloads)**, because the tutor installs ai-learning-kit from its GitHub repository through git. On macOS, typing `git` in a terminal offers to install it.
@@ -89,6 +89,8 @@ discarded). Either way there is only one copy. Notebooks you used with tutor 0.1
 were (`NotebookTutor` in your home folder); add the ones you still need, with your work in them, the same way.
 
 **Your own cells, deleting cells and a fresh start.** Before the first cell, between any two cells and after the last one, **+ Code** and **+ Text** add a cell of your own there; text cells take Markdown and maths as in Jupyter, and **Edit** reopens a text cell you added. The bin beside a cell (shown when the pointer is over it) deletes it: a cell you added goes at once, while a cell from your lecturer's notebook first explains what you lose, including the later cells that use what it defines. Only your copy changes, and **Undo** brings a deleted cell back. Added and deleted cells are saved in the notebook file. **Clear notes**, at the top of *Ask the tutor*, removes every explanation, answer, checkpoint and *Quiz me* question and the conversation, after asking you to confirm; your code, outputs and added cells stay, and the tutor's questions are asked again as you run the cells. **Hide** folds the *Ask the tutor* panel away so the notebook takes the whole window; the **Ask the tutor** button brings it back.
+
+**The topic reference.** For a notebook built with ai-learning-kit, **Topic reference** shows the page of its topic: what the topic covers and at which level, what you do yourself, what the kit does for you (and which of those steps you can look inside), and every helper of `T = kit.tools()` with what it takes and what it does. Links and the list at the top lead to the other topics. The pages are generated from the kit the tutor runs, so they always match the helpers your notebook calls; `kit.source(T.<name>)` in a cell prints a helper's code.
 
 **Data.** Notebooks built with ai-learning-kit download the datasets they need the first time, from the
 publisher's website, and check them. Run from a clone, the tutor keeps them in the clone's `data/` folder (git
@@ -139,8 +141,10 @@ go to the provider you chose, under that provider's terms; choose Ollama if noth
 
 ## For lecturers
 
-- Any Jupyter or Colab notebook works as it is. **For lecturers** in the tutor explains the optional `tutor`
-  metadata for exercise cells, prediction questions, your own checkpoint questions and Try-it experiments.
+- Any Jupyter or Colab notebook works as it is. [docs/PREPARING_NOTEBOOKS.md](docs/PREPARING_NOTEBOOKS.md)
+  explains exercise cells, **plans from question to code** (steps that fade across a practice notebook, which
+  the tutor's code checks and hints follow), and the optional `tutor` metadata for prediction questions, your own
+  checkpoint questions and Try-it experiments. **About**, in the tutor, links to it.
 - A notebook built with ai-learning-kit carries its topic, and optionally its level, in its metadata
   (`metadata.ai_learning_kit`). The tutor then sets the level (introductory, intermediate, advanced or research;
   the topic's own level when the notebook names none), follows the topic's scope (it explains the steps in focus,

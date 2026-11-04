@@ -41,7 +41,9 @@ calls to the language model the student chose.
   into the codes the page explains (`not_configured`, `bad_key`, `forbidden`, `model_not_found`,
   `rate_limited`, `offline`, `invalid_json`).
 - **`static/index.html`** is the tutor's interface: guided walkthrough and practice modes, explanations,
-  checkpoint questions, hints and experiments. It is shared with the hosted version; **`static/host.js`** adapts
+  checkpoint questions, hints and experiments. When an exercise carries a plan from question to code (a *From question to code* label in its
+  instructions and numbered comments in its starter code, see `docs/PREPARING_NOTEBOOKS.md`), its code check and
+  hints follow the plan's steps. It is shared with the hosted version; **`static/host.js`** adapts
   it to this server (the page's `NBT_HOST` and `window.claude` interfaces).
 
 ## The kit and the tutor
@@ -52,6 +54,8 @@ builds on, the case, the tasks with their guidance, and the topic's **scope**, w
 in and out, and where the method is taught) and which are out of scope. The page adds the scope to every prompt,
 adds a task's guidance when a cell refers to that task, and instructs the model never to contradict the kit's
 checks or reveal the values they check. The kit decides what is correct; the model only explains.
+
+**Topic reference** (`GET /api/kit/reference?topic=<name>`, from kit 1.1.0): the server asks its own kit for `ai_learning_kit.dev.reference.page(name)`, the topic's page as Markdown (the index without a name), and keeps each page once generated, because a topic's page imports its helpers. The page shows it in a dialog that opens on the notebook's topic and follows the links between topics. A topic whose extra is not installed still has its page, without the list of helpers.
 
 ## Security model
 

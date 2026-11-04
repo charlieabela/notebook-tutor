@@ -747,13 +747,13 @@ dialog pre { background: var(--code-bg); border: 1px solid var(--line); border-r
         <input type="file" id="dataFile" multiple hidden>
       </div>
     </div>
+    <button class="btn" id="refBtn" hidden title="What this notebook's topic covers, and every helper ai-learning-kit gives you"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 2.5h6.5a2 2 0 0 1 2 2v9H5a2 2 0 0 1-2-2z"/><path d="M3 11.5a2 2 0 0 1 2-2h6.5"/></svg>Topic reference</button>
     <button class="btn" id="runAbove" title="Run every code cell above the selected one, without explanations">Run all above</button>
-    <button class="btn primary" id="runNext"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5v11l9-5.5z"/></svg>Run next cell</button>
     <button class="btn" id="interruptBtn" hidden title="Stop the cell that is running (like Interrupt in Jupyter)">Stop</button>
     <button class="btn ghost" id="restart" title="Clear all variables and outputs">Restart Python</button>
     <button class="btn ghost" id="dlBtn" hidden title="Save this notebook with your code and outputs">Save my work</button>
     <span class="chip" id="saveHint" hidden title="Your code, outputs and progress are written into the .ipynb file">Save with Ctrl+S</span>
-    <button class="btn ghost" id="helpBtn">For lecturers</button>
+    <button class="btn ghost" id="helpBtn" title="Version, what runs where, your data, licence and source code">About</button>
   </div>
 
   <div class="main">
@@ -823,39 +823,15 @@ dialog pre { background: var(--code-bg); border: 1px solid var(--line); border-r
 </dialog>
 
 <dialog id="help">
-  <div class="dh"><h3>Preparing notebooks for the tutor</h3><button class="btn ghost" id="helpClose">Close</button></div>
+  <div class="dh"><h3>About Notebook Tutor</h3><button class="btn ghost" id="helpClose">Close</button></div>
   <div class="db prose">
-    <p id="helpIntro">Any Jupyter or Colab <code>.ipynb</code> works as it is. Students open this page, choose the mode, and load the notebook you gave them with <b>Open notebook</b>. You can share a link that opens a mode and level directly by adding a tag to the page address: <code>#practice</code>, <code>#guided</code>, a level (<code>#introductory</code>, <code>#intermediate</code>, <code>#advanced</code>, <code>#research</code>), or a combination such as <code>#advanced-practice</code>.</p>
-    <h4>Exercise cells (practice mode)</h4>
-    <p>A code cell counts as an exercise when it contains <code># YOUR CODE HERE</code>, <code># TODO</code>, <code>...</code> or <code>___</code> placeholders, <code>raise NotImplementedError</code>, or is empty and follows a markdown instruction. The markdown just before the cell is treated as the task.</p>
-    <h4>Optional tutor metadata</h4>
-    <p>Add a <code>tutor</code> object to a cell's metadata (in Jupyter: <i>Edit Cell Metadata</i>; or via a script) to steer the tutor:</p>
-<pre>"metadata": {"tutor": {
-  "predict": true,                 // guided: hide output until the student predicts
-  "question": {                    // your own checkpoint question, asked after the cell runs
-    "type": "mcq",
-    "question": "What does the 50% row in describe() show?",
-    "options": ["Mean", "Median", "Half the max", "Std"],
-    "answer": 1,
-    "explanation": "The 50th percentile is the median."
-  },
-  "exercise": true,                // force a cell to be an exercise
-  "solution": "model.fit(X_train, y_train)"   // reference for marking; never shown
-}}</pre>
-    <p>Short-answer questions use <code>"type": "short"</code> with an <code>"answer_guide"</code> instead of options. An experiment asks students to change code and interpret the new output; the tutor waits until they have changed the code and re-run the right cells, then marks their reading of the result:</p>
-<pre>"question": {
-  "type": "experiment",
-  "task": "Make the test set bigger and see how the score moves.",
-  "steps": ["In the cell above, change test_size=0.2 to test_size=0.5.",
-            "Run that cell, then run this one again."],
-  "question": "What happened to the test RMSE, and why?",
-  "answer_guide": "Training rows fall from 48 to 30; RMSE rises from 4.33 to 5.17 ...",
-  "hint": "test_size is an argument of train_test_split."
-}</pre>
-    <p>The experiment is attached to the cell whose output the student should read. The change can be in that cell or an earlier one. Students can put the original code back with one click, which re-runs the affected cells. Cells tagged <code>solution</code> are hidden and used as the reference for the exercise above them.</p>
-    <p><b>Keep in mind:</b> a reference solution is inside the file you hand out, so a student who opens the raw JSON can read it. Use it for self-study practice, not for marked work.</p>
+    <p id="helpVersion">A teaching assistant for Jupyter notebooks: run the code, and understand the ideas behind it.</p>
     <h4>What runs</h4>
     <p id="helpRuns">Python 3.12 in the browser, with NumPy, pandas, Matplotlib, seaborn, SciPy and scikit-learn. No internet from Python, no <code>!pip</code>, no <code>input()</code>, and no Google Drive mounting. Opened in Claude, the tutor uses Claude on each student's own account and asks them to allow it first. In the VS Code extension it uses Gemini, through each student's API key or a course server.</p>
+    <h4>Your data</h4>
+    <p id="helpData">Questions you answer and code you write stay in this browser.</p>
+    <h4>Preparing notebooks</h4>
+    <p id="helpIntro">Any Jupyter or Colab <code>.ipynb</code> works as it is. Lecturers can mark exercise cells, add their own checkpoint questions, predictions and experiments, and give each exercise a plan from question to code: <a href="https://github.com/charlieabela/notebook-tutor/blob/main/docs/PREPARING_NOTEBOOKS.md" target="_blank" rel="noopener">Preparing notebooks for the tutor</a>.</p>
     <h4>Licence and source code</h4>
     <p>Notebook Tutor is free software under the GNU Affero General Public License, version 3 (AGPL-3.0). Its complete source code is at <a href="https://github.com/charlieabela/notebook-tutor" target="_blank" rel="noopener">github.com/charlieabela/notebook-tutor</a>. If you change the tutor and offer it to others, including over a network, the licence asks you to share your version's source code under the same terms.</p>
   </div>
@@ -1217,7 +1193,7 @@ const S = {
 };
 
 /* ============================================================ notebook parsing */
-const EX_RE = /#\s*(YOUR CODE HERE|TODO\b)|^\s*\.\.\.\s*$|=\s*\.\.\.\s*(#.*)?$|_{3,}|raise\s+NotImplementedError/mi;
+const EX_RE = /#\s*(YOUR CODE HERE|TODO\b|(write|add|put) your (own )?(code|answer|solution) here)|^\s*\.\.\.\s*$|=\s*\.\.\.\s*(#.*)?$|_{3,}|raise\s+NotImplementedError/mi;
 function srcOf(c) { return Array.isArray(c.source) ? c.source.join("") : (c.source || ""); }
 function parseNotebook(json, name, isSample) {
   let nb;
@@ -1701,13 +1677,6 @@ async function runCell(i, opts = {}) {
 function focusNext(i) {
   for (let j = i + 1; j < S.cells.length; j++) { const n = S.cells[j]; if (n.type === "code" && !n.hidden) { setActive(j); scrollToCell(n); n.cm.focus(); return; } }
 }
-function nextUnrun() {
-  const start = Math.max(0, S.active);
-  for (let pass = 0; pass < 2; pass++) {
-    for (let j = pass ? 0 : start; j < S.cells.length; j++) { const c = S.cells[j]; if (c.type === "code" && !c.hidden && !c.count) return j; }
-  }
-  return -1;
-}
 async function runAbove() {
   const upto = S.active >= 0 ? S.active : S.cells.length;
   for (let j = 0; j < upto; j++) { const c = S.cells[j]; if (c.type === "code" && !c.hidden) { const r = await runCell(j, { silent: true }); if (r && r.error) { scrollToCell(c); break; } } }
@@ -1873,7 +1842,7 @@ WRITING RULES: Write in Markdown. Use the student's actual variable names and th
 function kitRules() {
   if (!S.kit) return "";
   const hasTasks = S.kit.tasks && Object.keys(S.kit.tasks).length > 0;
-  const tools = S.kit.tools ? `\nHELPERS: ${S.kit.tools.name} gives the topic's helper functions (${S.kit.tools.summary || ""}). Functions: ${(S.kit.tools.functions || []).join(", ")}. Explain what a helper takes and returns, and why the step is needed; explain how it works inside only for steps the scope below puts in focus, and, when the student asks how a helper works, for steps it lists as available on request (kit.source(T.<name>) prints a helper's code).` : "";
+  const tools = S.kit.tools ? `\nHELPERS: ${S.kit.tools.name} gives the topic's helper functions (${S.kit.tools.summary || ""}). Functions: ${(S.kit.tools.functions || []).join(", ")}. ${IS_LOCAL ? " The student can open the topic's reference with the Topic reference button: what is in focus, what the kit does for them, and every helper with what it takes and returns; point them to it when they ask which helpers exist." : ""} Explain what a helper takes and returns, and why the step is needed; explain how it works inside only for steps the scope below puts in focus, and, when the student asks how a helper works, for steps it lists as available on request (kit.source(T.<name>) prints a helper's code).` : "";
   const data = (S.kit.datasets || []).length ? `\nDATA: ${(S.kit.datasets || []).map((d) => `${d.title}, published by ${d.owner}`).join("; ")}. kit.start downloads it from the publisher the first time and checks it; if the download fails, the message printed by kit.start says what to do.` : "";
   const grading = hasTasks
     ? `kit.answer(...) checks the student's values and reasoning itself and records them in an answer book next to the notebook. Never contradict the kit's verdict, never state the values it checks or the wording of a model answer, and send the student to kit.task("T…") for the full task guidance.`
@@ -2099,6 +2068,35 @@ async function checkCode(c) {
   if (c.isEx) return enqueue(() => reviewExercise(c, true));
   return enqueue(() => (c.result && c.result.error ? explainError(c, true) : explainCell(c)));
 }
+/* An exercise may come with a plan "from question to code": a block headed **From question to code (<stage>).** in
+   its instructions, and numbered comments (# 1 ..., # 2 ...) in the starter code. Plans fade across a notebook: the
+   steps with their tools, then the steps alone, then labels only, then a plan the student writes. Hints and code
+   checks follow the plan's steps, so the help teaches how the code comes about, not only what it is. */
+function planBlock(c) {   // the plan may sit in the section's first cell, above code the exercise builds on
+  for (let j = c.idx - 1; j >= 0; j--) {
+    const p = S.cells[j];
+    if (p.type !== "markdown") continue;
+    const m = /\*\*From question to code[\s\S]*$/i.exec(p.source || "");
+    if (m) return m[0];
+    if (/^#{1,3}\s/m.test(p.source || "")) break;           // the start of the exercise's section
+  }
+  return "";
+}
+function planOf(c) {
+  const block = planBlock(c);
+  const m = /\*\*From question to code(?:\s*\(([^)]*)\))?\.?\*\*/i.exec(block);
+  const steps = (c.source || "").split("\n").filter((l) => /^\s*#\s*(\d+|\([a-z]\))\s/.test(l)).length;
+  if (!m && !steps) return null;
+  const shown = block && (instructionsBefore(c) || "").includes(block.slice(0, 80));
+  return { stage: m && m[1] ? m[1].trim() : "", ownPlan: !!(m && /your plan/i.test(m[1] || "")), steps, text: shown ? "" : block };
+}
+function planRules(c, forHint) {
+  const p = planOf(c);
+  if (!p) return "";
+  const own = p.ownPlan ? " At this stage the student writes the plan: first judge the plan itself (are the steps the right ones, in a sensible order, each small enough for one or two lines?), and treat a missing plan as part of the task." : "";
+  return `
+PLAN FROM QUESTION TO CODE: this exercise gives a plan${p.stage ? ` (stage: ${p.stage})` : ""}: the block headed "From question to code" in the instructions${p.steps ? " and the numbered comments in the starter code" : ""}.${p.text ? `\nThe plan, from earlier in this exercise's section:\n${clip(p.text, 1500)}\n` : ""} Use it. Refer to the steps by their numbers: say which steps the student's code already does, and which step comes next.${own} Do not replace the plan with a different one; if the student's approach departs from it, say whether it still answers the question.${forHint ? " Hints follow the plan: level 1 names the first step that is not done yet and what it must produce, in words; level 2 gives the tool for that step (function, method, key arguments) and a skeleton with ___ blanks; level 3 gives the worked solution with the plan's numbered comments kept and one or two lines under each." : ""}`;
+}
 async function reviewExercise(c, manual) {
   const k = card("review", "Code review", c, null, { auto: true }); show(k);
   if (!sampleUsable()) { noTutor(k); return; }
@@ -2110,7 +2108,7 @@ ${await context(c, { solution: true })}
 TASK: Review the student's attempt at this exercise.${!c.result ? " They have not run it yet, so judge the code itself." : ""} Judge it against the exercise instructions (the text before the cell and any comments in the starter code). Check two things:
 (a) Python: does it run, does it do what the task asks, is it clear?
 (b) Data science: is the method sound? For example fitting only on training data, evaluating on the test set, using the right metric and units, a 2-D feature matrix for scikit-learn, labelled plots, a correct interpretation, no data leakage, a random_state when asked.
-Do NOT write the full solution. You may name functions or show one short line pattern.
+Do NOT write the full solution. You may name functions or show one short line pattern.${planRules(c, false)}
 Hints already given for this exercise: ${c.hints || 0} of 3.
 Reply with only JSON:
 {"status":"correct"|"partial"|"incorrect"|"error"|"empty","headline":"one short sentence verdict","python":"feedback on the code (Markdown, 1-3 sentences)","concept":"feedback on the data-science reasoning (Markdown, 1-3 sentences)","next":"the single next thing to try; if correct, a short stretch question or idea"}
@@ -2155,7 +2153,7 @@ Level 1: point to the idea and the kind of tool needed (the concept, and which l
 Level 2: be specific: name the exact functions or methods and their key arguments, and give a code skeleton with ___ blanks for the parts the student must fill in.
 Level 3: give a complete worked solution in a python code block, then explain each line briefly so the student learns from it${c.solution ? " (you may base it on the reference solution)" : ""}.
 Build on what the student has written so far rather than starting over, unless their approach cannot work; if so, say why. Earlier hints already given: ${c.hintTexts && c.hintTexts.length ? c.hintTexts.map((t, i) => `[${i + 1}] ${clip(t, 400)}`).join(" ") : "none"}.
-Keep levels 1 and 2 short (2-5 sentences plus any skeleton).`;
+Keep levels 1 and 2 short (2-5 sentences plus any skeleton).${planRules(c, true)}`;
     const text = await stream(k, prompt);
     if (text) { c.hints = level; (c.hintTexts = c.hintTexts || []).push(text); finishHint(c); followUp(k); }
   });
@@ -2453,6 +2451,7 @@ function renderModeStrip() {
     : n ? `Write the code in the ${n} cell${n > 1 ? "s" : ""} headed Exercise. The tutor checks your work and gives hints; the other cells just set things up.`
         : "This notebook has no exercise cells. Guided walkthrough suits it better.";
   $("#modeSwitch").textContent = g ? "Switch to Practice" : "Switch to Guided walkthrough";
+  $("#modeSwitch").hidden = (g ? "guided" : "practice") === recommendedMode();   // the header's toggle does the rest
 }
 // One dialog serves as the start screen and as the "What's the difference?" explainer.
 function showModes(start) {
@@ -2539,7 +2538,6 @@ function init() {
     for (const f of e.target.files) { if (S.py || IS_LOCAL) await writeData(f); else { (S.pendingFiles = S.pendingFiles || []).push(f); if (!S.files.includes(f.name)) S.files.push(f.name); renderFiles(); } }
     e.target.value = "";
   };
-  $("#runNext").onclick = () => { const j = nextUnrun(); if (j < 0) { showNotice("<b>Every code cell has been run.</b> Edit a cell and run it again, or ask the tutor a question."); return; } scrollToCell(S.cells[j]); runCell(j, { advance: false }); };
   $("#runAbove").onclick = runAbove;
   $("#restart").onclick = async () => {
     if (!S.rt) return; S.rt.reset();
@@ -2581,14 +2579,17 @@ function init() {
     $("#llmGrp").hidden = false; $("#llmFld").hidden = false; $("#llmBtn").onclick = () => HOST.setup();
     HOST.describeLLM($("#llmName"));
     $("#interruptBtn").onclick = () => HOST.interrupt();
+    if (HOST.reference) { $("#refBtn").hidden = false; $("#refBtn").onclick = () => HOST.reference(); }
     $("#dataIntro").innerHTML = "Python runs in the notebook's folder. Read files by their path from the notebook, e.g. <code>pd.read_csv(\"data/houses.csv\")</code>; files Python writes are saved there too. <b>Add data file</b> copies a file from elsewhere on your computer into that folder; it is also how you add a course dataset that could not be downloaded.";
     $("#privacyHint").textContent = "Your settings and API key stay on this computer. Your code, outputs and progress are saved in the notebook file.";
-    $("#helpIntro").innerHTML = "Any Jupyter or Colab <code>.ipynb</code> works as it is. Students put the notebooks you give them in the tutor's folder (or add them with <b>Open notebook</b>), choose the mode, and work; the file is saved as they go. A notebook built with <b>ai-learning-kit</b> also tells the tutor its topic (and, optionally, its level), so the level and the topic's scope are set for them.";
+    $("#helpVersion").textContent = `Notebook Tutor ${HOST.version || ""}: a teaching assistant for Jupyter notebooks that runs on your own computer. Run the code, and understand the ideas behind it.`;
+    $("#helpData").textContent = "Your notebooks, your code and your progress are saved in the notebook files on this computer. What the tutor sends to the language model you chose: the code and output of the cell you are working on, the code of earlier cells, a summary of your variables (names, types, shapes and small values), the notebook's instructions, and your questions and answers. Data files are not sent, though the output of a cell that prints them is. Your settings and API key stay on this computer and never enter a notebook or its Python.";
     $("#helpRuns").innerHTML = "Notebook Tutor runs on the student's own computer: a Jupyter kernel started in the notebook's folder, with the libraries installed with the tutor (NumPy, pandas, Matplotlib, seaborn, scikit-learn, networkx and ai-learning-kit; PyTorch and PyTorch Geometric with the <code>advanced</code> option). Files are read and written in the notebook's folder, <code>%pip</code> works, and <code>input()</code> does not. The language model is the student's choice: Gemini, Claude or OpenAI with their own API key, or a model on their own computer through Ollama. The key stays in the tutor's settings on that computer and never enters the notebook or the kernel. For notebooks built with ai-learning-kit, the tutor explains the steps in focus, treats the kit's black boxes as black boxes, and never overrides the kit's checks.";
   } else if (IN_VSCODE) {
     $("#openBtn").hidden = true; $("#dlBtn").hidden = true; $("#saveHint").hidden = false;
     $("#dataIntro").innerHTML = "Data files in the notebook's folder, and in its subfolders, are added for you. Read them by their path from the notebook, e.g. <code>pd.read_csv(\"data/houses.csv\")</code>. Files Python writes stay in memory and are not saved to disk.";
     $("#privacyHint").textContent = "Your settings are kept in VS Code. Your code and progress are saved in the notebook file.";
+    $("#helpData").textContent = "Your settings are kept in VS Code. Your code and progress are saved in the notebook file.";
     $("#saveHint").textContent = /Mac/i.test(navigator.platform || navigator.userAgent) ? "Save with Cmd+S" : "Save with Ctrl+S";
   }
   if (HOSTED_FILE) {

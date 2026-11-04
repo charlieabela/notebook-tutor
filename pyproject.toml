@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "notebook-tutor"
-version = "0.2.1"
+version = "0.3.0"
 description = "A teaching assistant for Jupyter notebooks that runs on the student's own computer"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -33,7 +33,7 @@ dependencies = [
   "nltk>=3.8",            # stemming in the text-to-graphs topic
   "neo4j>=5.14",          # the Neo4j driver: setup checks and graph-database topics
   "pip>=24",              # so that %pip install works inside notebooks, as in Jupyter and Colab
-  "ai-learning-kit @ git+https://github.com/charlieabela/ai-learning-kit@v1.0.0",   # the public repository; releases are published there from the development repository
+  "ai-learning-kit @ git+https://github.com/charlieabela/ai-learning-kit@v1.1.0",   # the public repository; releases are published there from the development repository
 ]
 
 [project.optional-dependencies]

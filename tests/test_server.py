@@ -204,8 +204,11 @@ def test_kit_context_from_metadata(tutor):
     assert out["kit"] == out["notebook_meta"]["kit_version"] and "version_note" not in out, out.get("version_note")
 
 
-def test_version_notice_only_when_the_notebook_needs_a_newer_kit(tutor):
+def test_version_notice_only_when_the_notebook_needs_a_newer_kit(tutor, monkeypatch):
     import json as _json
+    from notebook_tutor import kits
+    # A notebook of an earlier major version runs on its own kit; pretend it is already downloaded (no network).
+    monkeypatch.setattr(kits, "ensure", lambda root, version, url=None, timeout=600: (tutor.app.root, ""))
     nb = _json.loads((tutor.app.root / "data_formats_short.ipynb").read_text())
     for version, noted in (("0.4.0", False), ("0.5.0", False), ("9.0.0", True)):
         nb["metadata"]["ai_learning_kit"]["kit_version"] = version
@@ -283,3 +286,33 @@ def test_a_notebooks_own_level_overrides_the_topics(tutor):
     (tutor.app.root / "data_formats_short.ipynb").write_text(_json.dumps(nb))
     ctx = tutor.call("GET", "/api/kit/context?path=data_formats_short.ipynb")[1]["context"]
     assert ctx["level"] == "research" and ctx["cohort"].startswith("Research level")
+
+
+def _kit_has_reference():
+    try:
+        from ai_learning_kit.dev import reference
+    except Exception:
+        return False
+    return hasattr(reference, "page")
+
+
+def test_topic_reference_index_and_a_topic(tutor):
+    import pytest
+    if not _kit_has_reference():
+        pytest.skip("the tutor's kit has no reference (ai-learning-kit 1.1.0 or later)")
+    status, out = tutor.call("GET", "/api/kit/reference")
+    assert status == 200 and out["name"] == "README" and out["markdown"].startswith("# ai-learning-kit reference")
+    names = [t["name"] for t in out["topics"]]
+    assert "data-cleaning" in names and "knowledge-graphs" in names
+    status, out = tutor.call("GET", "/api/kit/reference?topic=data-cleaning.md")
+    page = out["markdown"]
+    assert out["name"] == "data-cleaning" and "## The three layers" in page and "T = kit.tools()" in page
+    assert "](web-data.md)" in page                     # links to other topics, which the page follows
+
+
+def test_topic_reference_refuses_an_unknown_topic(tutor):
+    import pytest
+    if not _kit_has_reference():
+        pytest.skip("the tutor's kit has no reference (ai-learning-kit 1.1.0 or later)")
+    status, out = tutor.call("GET", "/api/kit/reference?topic=no-such-topic")
+    assert status == 404 and "no topic called no-such-topic" in out["error"]["message"]

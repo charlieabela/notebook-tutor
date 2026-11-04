@@ -21,6 +21,11 @@ def browser():
         b.close()
 
 
+def run_cell(page, n):
+    """Run the n-th code cell (from 0) with the run button beside it, as a student does."""
+    page.locator(".cell .run").nth(n).click()
+
+
 def open_page(browser, client):
     page = browser.new_page(viewport={"width": 1400, "height": 900})
     errors = []
@@ -45,7 +50,7 @@ def test_guided_walkthrough(browser, tutor, fake_llm):
     assert page.input_value("#level") == "introductory"             # the topic's level, from the kit
 
     for i in range(4):                                              # pip (skipped), imports, kit.start, read CSV
-        page.click("#runNext")
+        run_cell(page, i)
         page.wait_for_function(f"document.querySelector('#progText').textContent.startsWith('{i + 1} of')",
                                timeout=90000)
     page.wait_for_selector(".cell table", timeout=30000)            # the DataFrame from the CSV
@@ -90,7 +95,7 @@ def test_first_run_without_notebooks(browser, tutor):
     page.click("#pick-guided")
     page.wait_for_function("document.querySelector('#pyText').textContent === 'Python ready'", timeout=90000)
     # no language model: Python works and the page says how to set the tutor up
-    page.click("#runNext")
+    run_cell(page, 0)
     page.wait_for_selector("#tutorBanner:not([hidden])")
     assert "Set up the tutor" in page.inner_text("#tutorBanner")
     if SHOTS:
@@ -184,7 +189,7 @@ def test_a_missing_dataset_points_to_the_data_files_button(browser, tutor):
     page.wait_for_selector("#modes[open]")
     page.click("#pick-guided")
     page.wait_for_function("document.querySelector('#pyText').textContent === 'Python ready'", timeout=90000)
-    page.click("#runNext")
+    run_cell(page, 0)
     page.wait_for_selector("#notice:has-text('A dataset is missing')", timeout=60000)
     assert "cora.tgz" in page.inner_text("#notice")
     assert page.locator(".out-error pre").count() == 0          # the kit's message only, not a traceback
@@ -273,7 +278,7 @@ def test_clearing_the_tutors_notes(browser, tutor, fake_llm):
     md = {"cell_type": "markdown", "id": "m", "metadata": {}, "source": "# Notes"}
     code = {"cell_type": "code", "id": "c", "metadata": {}, "outputs": [], "execution_count": None, "source": "y = 2 * 21\ny"}
     page, errors = _open_plain(browser, tutor, "clear.ipynb", [md, code])
-    page.click("#runNext")
+    run_cell(page, 0)
     page.wait_for_selector(".cell .notes .card:has-text('Fake explanation')", timeout=60000)
     page.fill("#ask", "What does y hold?")
     page.click("#sendAsk")
@@ -358,3 +363,108 @@ def test_the_tutor_panel_can_be_hidden(browser, tutor):
     page.click("#fab")
     assert page.locator("#tutor").is_visible() and not page.locator("#fab").is_visible()
     assert not errors, errors
+
+
+def test_the_topic_reference_opens_on_the_notebooks_topic(browser, tutor):
+    from ai_learning_kit.dev import reference
+    if not hasattr(reference, "page"):
+        pytest.skip("the tutor's kit has no reference (ai-learning-kit 1.1.0 or later)")
+    page, errors = open_page(browser, tutor)
+    page.wait_for_selector("#ntOpen[open]")
+    page.click("#ntOpen li:has-text('data_formats_short.ipynb')")
+    page.wait_for_selector("#modes[open]")
+    page.click("#pick-guided")
+    page.click("#refBtn")
+    page.wait_for_selector("#ntRef[open] .ref h2:has-text('The three layers')", timeout=60000)
+    assert page.input_value("#ntRef [data-topic]") == "data-formats"
+    text = page.inner_text("#ntRef .ref")
+    assert "Graded tasks" in text and "do not edit by hand" not in text     # the authors' note is left out
+    if SHOTS:
+        page.screenshot(path=os.path.join(SHOTS, "reference.png"))
+    page.select_option("#ntRef [data-topic]", "README")                     # the index of every topic
+    page.wait_for_selector("#ntRef .ref h1:has-text('ai-learning-kit reference')")
+    page.click("#ntRef .ref a[href='#data-cleaning']")                      # a link to a topic stays in the dialog
+    page.wait_for_selector("#ntRef .ref h1:has-text('cleaning')")
+    assert page.input_value("#ntRef [data-topic]") == "data-cleaning"
+    assert page.locator("#ntRef[open]").count() == 1 and not errors, errors
+
+
+def test_shift_enter_runs_a_cell_and_moves_on(browser, tutor):
+    """With no Run next cell button, Shift+Enter is the keyboard way through a notebook."""
+    cells = [{"cell_type": "code", "id": f"c{i}", "metadata": {}, "outputs": [], "execution_count": None,
+              "source": f"x{i} = {i}\nx{i}"} for i in range(2)]
+    page, errors = _open_plain(browser, tutor, "keys.ipynb", cells)
+    assert page.locator("#runNext").count() == 0
+    page.locator(".cell .CodeMirror").first.click()
+    page.keyboard.press("Shift+Enter")
+    page.wait_for_function("document.querySelector('#progText').textContent.startsWith('1 of')", timeout=90000)
+    page.keyboard.press("Shift+Enter")                                # the second cell has the focus now
+    page.wait_for_function("document.querySelector('#progText').textContent.startsWith('2 of')", timeout=90000)
+    assert not errors, errors
+
+
+def test_about_shows_the_version_licence_and_where_to_prepare_notebooks(browser, tutor):
+    page, errors = open_page(browser, tutor)
+    page.wait_for_selector("#ntOpen[open]")
+    page.click("#ntOpen li:has-text('data_formats_short.ipynb')")
+    page.wait_for_selector("#modes[open]")
+    page.click("#pick-guided")
+    page.click("#helpBtn")
+    text = page.inner_text("#help")
+    assert "About Notebook Tutor" in text and "AGPL" in text and "Preparing notebooks for the tutor" in text
+    assert "metadata" not in text                                     # the authoring details live in the docs
+
+
+def test_hints_and_checks_follow_the_exercises_plan(browser, tutor, fake_llm):
+    use_fake(tutor, fake_llm)
+    md = {"cell_type": "markdown", "id": "m", "metadata": {}, "source":
+          "## Exercise 1\n\nCount the even numbers in `xs`.\n\n**From question to code (plan given, with the tools).** "
+          "*Goal:* one line per step.\n\n1. Keep the even numbers (`x % 2 == 0`).\n2. Count them (`len`)."}
+    code = {"cell_type": "code", "id": "c", "metadata": {}, "outputs": [], "execution_count": None, "source":
+            "xs = [1, 2, 3, 4]\n# 1 keep the even numbers   (x % 2 == 0)\n# 2 count them              (len)\nn = None   # TODO"}
+    (tutor.app.root / "data_formats_short.ipynb").unlink()
+    (tutor.app.root / "plan.ipynb").write_text(json.dumps({"nbformat": 4, "nbformat_minor": 5,
+                                                           "metadata": {"kernelspec": {"name": "python3"}}, "cells": [md, code]}))
+    page, errors = open_page(browser, tutor)
+    page.wait_for_selector("#ntOpen[open]")
+    page.click("#ntOpen li:has-text('plan.ipynb')")
+    page.wait_for_selector("#modes[open]")
+    page.click("#pick-practice")
+    page.wait_for_function("document.querySelector('#pyText').textContent === 'Python ready'", timeout=90000)
+    page.click(".cell .act:has-text('Hint 1 of 3')")
+    page.wait_for_selector(".card:has-text('Hint 1 of 3')", timeout=60000)
+    page.wait_for_function("document.querySelectorAll('.card').length > 0", timeout=60000)
+    deadline = time.time() + 30
+    while time.time() < deadline and not any("Give hint level" in p for p in fake_llm.prompts()):
+        time.sleep(0.2)
+    hint = [p for p in fake_llm.prompts() if "Give hint level" in p][-1]
+    assert "PLAN FROM QUESTION TO CODE" in hint and "stage: plan given, with the tools" in hint
+    assert "level 1 names the first step that is not done yet" in hint
+
+
+
+def test_a_plan_above_given_code_still_reaches_the_tutor(browser, tutor, fake_llm):
+    """The plan may sit in the section's first cell, with code the exercise builds on between it and the exercise."""
+    use_fake(tutor, fake_llm)
+    cells = [{"cell_type": "markdown", "id": "m1", "metadata": {}, "source":
+              "## Exercise 2 · Fix the pipeline\n\n**From question to code (questions instead of steps).** "
+              "(a) Which links may the model see? (b) Which links may the training error use?"},
+             {"cell_type": "code", "id": "c1", "metadata": {}, "outputs": [], "execution_count": None, "source": "links = [1, 2, 3]"},
+             {"cell_type": "markdown", "id": "m2", "metadata": {}, "source": "Write the fix."},
+             {"cell_type": "code", "id": "c2", "metadata": {}, "outputs": [], "execution_count": None, "source":
+              "# (a) the graph the encoder may see\ngraph = None   # TODO"}]
+    (tutor.app.root / "data_formats_short.ipynb").unlink()
+    (tutor.app.root / "plan2.ipynb").write_text(json.dumps({"nbformat": 4, "nbformat_minor": 5,
+                                                            "metadata": {"kernelspec": {"name": "python3"}}, "cells": cells}))
+    page, errors = open_page(browser, tutor)
+    page.wait_for_selector("#ntOpen[open]")
+    page.click("#ntOpen li:has-text('plan2.ipynb')")
+    page.wait_for_selector("#modes[open]")
+    page.click("#pick-practice")
+    page.wait_for_function("document.querySelector('#pyText').textContent === 'Python ready'", timeout=90000)
+    page.click(".cell .act:has-text('Hint 1 of 3')")
+    deadline = time.time() + 40
+    while time.time() < deadline and not any("Give hint level" in p for p in fake_llm.prompts()):
+        time.sleep(0.2)
+    hint = [p for p in fake_llm.prompts() if "Give hint level" in p][-1]
+    assert "stage: questions instead of steps" in hint and "Which links may the model see?" in hint
