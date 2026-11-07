@@ -30,7 +30,7 @@ Close the window and open a new one, so that the `uv` command is found.
 **2. Install Notebook Tutor**
 
 ```
-uv tool install --python 3.12 https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.3.0.zip
+uv tool install --python 3.12 https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.3.3.zip
 ```
 
 This takes a few minutes the first time. If the next step says `nt` is not found, run `uv tool update-shell`,
@@ -43,12 +43,12 @@ then open a new window.
 | data formats, web data, cleaning, exploring data, modelling, text to graphs, graph embeddings | the standard install above | NumPy, pandas, Matplotlib, seaborn, scikit-learn, networkx, NLTK, the Neo4j driver, ai-learning-kit |
 | graph neural networks, knowledge graphs, retrieval-augmented generation, transformers | the advanced install below | PyTorch, sentence-transformers, Hugging Face transformers, PyTorch Geometric, rdflib and owlrl |
 
-Your lecturer says which install the course needs.
+Your lecturer says which install the course needs. On an Intel Mac, the advanced install uses PyTorch 2.2 with the versions of NumPy, transformers and sentence-transformers that work with it, because PyTorch is no longer built for Intel Macs; the notebooks run the same.
 
 For the advanced install (about 1 GB more), use this instead:
 
 ```
-uv tool install --python 3.12 "notebook-tutor[advanced] @ https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.3.0.zip"
+uv tool install --python 3.12 "notebook-tutor[advanced] @ https://github.com/charlieabela/notebook-tutor/archive/refs/tags/v0.3.3.zip"
 ```
 
 **You also need [Git](https://git-scm.com/downloads)**, because the tutor installs ai-learning-kit from its GitHub repository through git. On macOS, typing `git` in a terminal offers to install it.

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "notebook-tutor"
-version = "0.3.0"
+version = "0.3.3"
 description = "A teaching assistant for Jupyter notebooks that runs on the student's own computer"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -33,12 +33,20 @@ dependencies = [
   "nltk>=3.8",            # stemming in the text-to-graphs topic
   "neo4j>=5.14",          # the Neo4j driver: setup checks and graph-database topics
   "pip>=24",              # so that %pip install works inside notebooks, as in Jupyter and Colab
-  "ai-learning-kit @ git+https://github.com/charlieabela/ai-learning-kit@v1.1.0",   # the public repository; releases are published there from the development repository
+  "ai-learning-kit @ git+https://github.com/charlieabela/ai-learning-kit@v1.2.0",   # the public repository; releases are published there from the development repository
 ]
 
 [project.optional-dependencies]
 # Topics on dense retrieval, embeddings, transformers, graph neural networks and knowledge graphs.
-advanced = ["torch>=2.2", "torch_geometric>=2.5", "sentence-transformers>=3.0", "transformers>=4.40", "nltk>=3.8", "neo4j>=5.14", "rdflib>=7.0", "owlrl>=6.0"]
+advanced = [
+    # PyTorch stopped building for Intel Macs after 2.2. There, PyTorch 2.2 needs NumPy 1, transformers 5 switches
+    # PyTorch off (it wants 2.6), and sentence-transformers 6 needs transformers 5; so Intel Macs get the last
+    # versions that work together, and every other computer the current ones.
+    "torch>=2.5; sys_platform != 'darwin' or platform_machine != 'x86_64'", "torch>=2.2,<2.3; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "numpy>=2; sys_platform != 'darwin' or platform_machine != 'x86_64'", "numpy<2; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "transformers>=5; sys_platform != 'darwin' or platform_machine != 'x86_64'", "transformers>=4.41,<5; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "sentence-transformers>=6; sys_platform != 'darwin' or platform_machine != 'x86_64'", "sentence-transformers>=3.0,<6; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    "torch_geometric>=2.5", "nltk>=3.8", "neo4j>=5.14", "rdflib>=7.0", "owlrl>=6.0"]
 dev = ["pytest>=8", "playwright>=1.40"]
 
 [project.scripts]
@@ -58,6 +66,14 @@ notebook_tutor = ["static/*", "static/vendor/**/*"]
 testpaths = ["tests"]
 
 # On Linux, PyTorch's default wheels bundle CUDA (several GB). Use the CPU wheels unless you need a GPU.
+[tool.uv]
+# uv resolves once for every kind of computer; fail here, not on a student's machine, if one of them is left out.
+# Intel Macs only up to Python 3.12: PyTorch 2.2, the last built for them, has no wheels for later Pythons
+# (the install instructions use Python 3.12).
+required-environments = ["sys_platform == 'linux'", "sys_platform == 'win32'",
+                         "sys_platform == 'darwin' and platform_machine == 'arm64'",
+                         "sys_platform == 'darwin' and platform_machine == 'x86_64' and python_full_version < '3.13'"]
+
 [tool.uv.sources]
 torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
 
